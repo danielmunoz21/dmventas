@@ -1,0 +1,78 @@
+<?php 
+
+use yii\helpers\Html;
+use yii\grid\GridView;
+
+$this->title = 'Cierre Turno';
+$this->params['breadcrumbs'][] = $this->title;
+
+
+?>
+
+<h1>Cierre de Turno  <?=$modelTurno->dm_nombre?></h1>
+
+<?php 
+
+ 	if ( count( $aCajas ) > 0 ){
+
+ 			foreach( $aCajas as $oModelCaja ){
+
+ 				$iTotalCantidad = 0;
+ 				$iTotalVentas   = 0;
+
+ 				?>
+
+					<div class="panel panel-default">
+					  <div class="panel-heading"><?php echo $oModelCaja->dm_cajas_nombre; ?></div>
+					  <table class="table table-condensed">
+					    <thead>
+					    	<tr>
+					    		<td><strong>C&oacute;digo Producto</strong></td>
+					    		<td><strong>Producto</strong></td>
+					    		<td><strong>Cantidad Vendida</strong></td>
+					    		<td><strong>Total</strong></td>
+					    	</tr>
+					    </thead>
+					    <tbody>
+					    	<?php 
+					    		foreach ($aCierres as $key => $data) {
+
+					    			if ( $data['cajaid'] == $oModelCaja->dm_cajas_id ){
+					    				$iTotalCantidad += $data['cantidad'];
+					    				$iTotalVentas   += $data['total'];	
+
+					    				$strTotal = number_format( $data['total'], 0, ',' , '.' );
+					    				echo '<tr>';
+					    					
+					    					echo '<td>'. $data['prodcod'] .'</td>';
+					    					echo '<td>'. $data['nomprod'] .'</td>';
+					    					echo '<td>'. $data['cantidad'] .'</td>';
+					    					echo '<td>$'. $strTotal .'</td>';
+					    				echo '</tr>';
+
+					    				unset( $aCierres[ $key ] );
+					    			}
+					    		}
+					    	?>
+					    </tbody>
+							<tfoot>
+								<tr>
+									<td colspan="2"><strong>TOTAL</strong></td>
+									<td><?php echo $iTotalCantidad ?></td>
+									<td><strong><?php echo '$'. number_format( $iTotalVentas, 0, ',' , '.' ); ?></strong></td>
+								</tr>
+							</tfoot>
+					  </table>
+					</div>
+
+ 				<?php
+ 				
+ 			}
+
+
+ 	}
+ 		
+
+ 
+
+?>
