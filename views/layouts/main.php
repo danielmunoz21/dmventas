@@ -46,7 +46,7 @@ AppAsset::register($this);
 
         if ( Yii::$app->user->identity->tipo == 1 ){  //usuario administrador
           $menuItems[] = [
-            'label' => 'Mantenedores',
+            'label' => 'Administración',
             'items' => [
                 [ 'label' => 'Usuarios', 'url' => ['/usuario'] ],
                 [ 'label' => 'Cajas', 'url' => ['/cajas'] ],
@@ -61,7 +61,7 @@ AppAsset::register($this);
             'label' => 'Productos',
             'items' => [
                 [ 'label' => 'Registrar producto', 'url' => [ '/productos/create' ] ],
-              [ 'label' => 'Listado de productos', 'url' => [ '/productos' ] ],
+                [ 'label' => 'Listado de productos', 'url' => [ '/productos' ] ],
             ]
           ];
 

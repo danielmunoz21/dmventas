@@ -17,6 +17,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Registrar nuevo Producto', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php
+            echo Html::a('<i class="fa glyphicon glyphicon-download-alt"></i> Generar Listado Imprimible', ['/productos/listado'], [
+                'class'=>'btn btn-info',
+                'target'=>'_blank',
+                'data-toggle'=>'tooltip',
+                'title'=>'Genera PDF con listado de productos y codigos de estos'
+            ]);
+        ?>
     </p>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,

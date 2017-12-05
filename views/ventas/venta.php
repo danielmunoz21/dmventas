@@ -38,8 +38,18 @@ $script2 = <<< JS
 function calculartotal( cantidad, idProducto ){
 	var total = cantidad * jQuery( '#costo_' + idProducto ).val();
 	jQuery('#total_prod_' +  idProducto).val( total );
+	calcularTotalVenta();
 }
 
+function calcularTotalVenta(){
+    var valorGeneral = 0; 
+    $('input.ventas ').each(function(){
+        valorGeneral += parseInt(this.value);
+    });
+    
+    $('#totalventa').html( '' );
+    $('#totalventa').html( '$' +  valorGeneral );
+}
 
 
 JS;
@@ -57,7 +67,7 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
 			<tr>
 				<td>Código</td>
 				<td>Producto</td>
-				<td>Valor</td>
+				<td>Valor unidad</td>
 				<td>Cantidad</td>
 				<td>Total</td>
 				<td>&nbsp;</td>
@@ -66,6 +76,13 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
 		<tbody>
 			<tr id='addr1' class="lastrow1"></tr>
 		</tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" style="text-align: right;"><strong>Total Venta</strong></td>
+                <td id="totalventa"></td>
+                <td>&nbsp;</td>
+            </tr>
+        </tfoot>
 	</table>
 	
 </div>

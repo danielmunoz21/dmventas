@@ -68,5 +68,16 @@ class DmProductos extends \yii\db\ActiveRecord
         return $this->hasMany(DmVentasProd::className(), ['dm_productos_dm_id_producto' => 'dm_id_producto']);
     }
 
+    /**
+     * Extrae productos por id de caja
+     * @param integer $p_iIdCaja
+     * @return array
+     */
+    static public function getProdByIdCaja( $p_iIdCaja ){
+         return self::find()->where( [ 'dm_cajas_id' => $p_iIdCaja ] )->all();
+
+    }
+
+
 
 }

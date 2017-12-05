@@ -124,7 +124,7 @@ class VentasController extends Controller
                     [ 'id' => 'costo_'.$iIdProducto,  ] );
                 $response .= '</td>';
                 $response .= '<td>';
-                $response .= Html::input('text', 'venta['.$iIdProducto.'][total]', $modelProducto->dm_precio_venta ,[ 'readonly' => true, 'class' => 'form-control', 'id' => 'total_prod_' . $iIdProducto ]);
+                $response .= Html::input('text', 'venta['.$iIdProducto.'][total]', $modelProducto->dm_precio_venta ,[ 'readonly' => true, 'class' => 'ventas form-control', 'id' => 'total_prod_' . $iIdProducto ]);
                 $response .= '</td>';
                 $response .= '<td>';
                 $response .= Html::button( '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>', [ 'class' =>'btn btn-info borrar',  ] );
@@ -145,7 +145,7 @@ class VentasController extends Controller
 
         $user = Yii::$app->user->identity;
         $aVentas = $_POST['venta'];
-      
+
         $aProductos = array();
         $iTotalVenta = 0;
         if ( count( $aVentas ) > 0 ){

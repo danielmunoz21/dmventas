@@ -29,7 +29,8 @@ class DmVentaSearch extends DmVentas
 
     public function attributeLabels(){
         return [
-            'dm_nom_producto' => 'Producto'
+            'dm_nom_producto' => 'Producto',
+            'dm_codigo' => 'Código de producto'
         ];
     }
 

@@ -7,36 +7,42 @@ use keygenqt\autocompleteAjax\AutocompleteAjax;
 
 
 $script = <<< JS
-
+var i=1;  
+var total_venta = 0;
 function procesar(e){
-      
-        $(document).ready(function(){ 
-            var i=1;     
-              var form = $('#searchproducto');
-              $.ajax({
-                    url    : form.attr('action'),
-                    type   : 'POST',
-                    data   : form.serialize(),
-                    success: function (response) 
-                    {          
-                        if ( response == -1 ){
-                            alert( 'Producto no encontrado' );
+        if ( $('#searchprod').val() !== '' ){
+            
+        
+            $(document).ready(function(){ 
+                 
+                  var form = $('#searchproducto');
+                  $.ajax({
+                        url    : form.attr('action'),
+                        type   : 'POST',
+                        data   : form.serialize(),
+                        success: function (response) 
+                        {          
+                            if ( response == -1 ){
+                                alert( 'Producto no encontrado' );
+                                $('#searchprod').val( '' );
+                            }
+                            else {
+                                
+                                $('#addr' + i).html(response);
+                                $("#tab_productos  tbody tr.lastrow"+i).after('<tr id="addr'+(i+1)+'" class="lastrow'+(i+1)+'"></tr>');
+                                i++;   
+                                $('#searchprod').val( '' );
+                                calcularTotalVenta();
+                            }
+                        },
+                        error  : function () 
+                        {
+                            console.log('internal server error');
                         }
-                        else {
-                            
-                            $('#addr' + i).html(response);
-                            $("#tab_productos  tbody tr.lastrow"+i).after('<tr id="addr'+(i+1)+'" class="lastrow'+(i+1)+'"></tr>');
-                            i++;   
-                            //$('#searchprod').val( '' );
-                        }
-                    },
-                    error  : function () 
-                    {
-                        console.log('internal server error');
-                    }
-                });
-            return false;
-        });
+                    });
+                return false;
+            });
+        }
 }
 
 
@@ -44,6 +50,7 @@ function procesar(e){
 jQuery(document).on('click', '.borrar', function (event) {
     event.preventDefault();
     jQuery(this).closest('tr').remove();
+    calcularTotalVenta();
 });
 JS;
 $this->registerJs($script, View::POS_END);

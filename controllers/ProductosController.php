@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\DmCajas;
+use kartik\mpdf\Pdf;
 
 
 /**
@@ -31,7 +32,7 @@ class ProductosController extends Controller
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::className(),
-                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock'],
+                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado' ],
                 'rules' => [
                     // allow authenticated users
                     [
@@ -140,6 +141,36 @@ class ProductosController extends Controller
         }
 
         return $this->render( '_stock', [ 'model' => $model ] );
+    }
+
+
+    public function actionListado(){
+
+        $aCajas = DmCajas::getAll();
+
+
+        $content = $this->renderPartial('_list_format', [ 'aCajas' => $aCajas ]);
+
+        $pdf = new Pdf([
+            'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts
+            'format' => Pdf::FORMAT_LETTER,
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            'content' => $content,
+            'options' => [
+                'title' => 'Listado de Productos',
+                'subject' => 'Listado de productos con códigos de barra incluidos'
+            ],
+            'methods' => [
+                'SetHeader' => ['DmVentas: ' . date("r")],
+                'SetFooter' => ['|Página {PAGENO}|'],
+            ],
+            'destination' => Pdf::DEST_BROWSER,
+            'filename'=> 'Listado_productos.pdf'
+        ]);
+
+        // return the pdf output as per the destination setting
+        $pdf->render();
+
     }
 
 
