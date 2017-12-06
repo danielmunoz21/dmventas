@@ -53,13 +53,6 @@ class VentasController extends Controller
     public function actionVenta(){
 
         $modelSearch = new DmVentaSearch();
-        $session = new Session;
-        $session->open(); 
-            if (  isset( $session['ventas'] )  )  {
-                $session->remove( 'contador' );
-            }
-        $session->close();
-
         return $this->render( 'venta', [
                 'modelSearch' => $modelSearch,
             ]);
@@ -108,23 +101,20 @@ class VentasController extends Controller
             //cargo informacion del producto
             $modelProducto = $this->loadProducto( $strCodigoProd );
             if ( $modelProducto !== false ) {
+                $indice = uniqid();
                 $iIdProducto = $modelProducto->dm_id_producto;
-                $session = new Session;
-                $session->open();
-
-                $session->close();
                 $response .= '<td>'.$modelProducto->dm_codigo.'</td>';
                 $response .= '<td>'.$modelProducto->dm_nom_producto.'</td>';
                 $response .= '<td>'.$modelProducto->dm_precio_venta.'</td>';
                 $response .= '<td>';
-                $response .= Html::input('text', 'venta['.$iIdProducto.'][cantidad]', 1, [ 'class' => 'form-control', 'onblur' => 'javascript:calculartotal( this.value, "'.$iIdProducto.'" )' ]);
+                $response .= Html::input('text', 'venta['.$iIdProducto.']['.$indice.'][cantidad]', 1, [ 'class' => 'form-control', 'onblur' => 'javascript:calculartotal( this.value, "'.$iIdProducto.'" )' ]);
                 $response .= Html::hiddenInput(
-                    'valor['.$iIdProducto.'][cantidad]',
+                    'valor['.$iIdProducto.']['.$indice.'][cantidad]',
                     $modelProducto->dm_precio_venta ,
                     [ 'id' => 'costo_'.$iIdProducto,  ] );
                 $response .= '</td>';
                 $response .= '<td>';
-                $response .= Html::input('text', 'venta['.$iIdProducto.'][total]', $modelProducto->dm_precio_venta ,[ 'readonly' => true, 'class' => 'ventas form-control', 'id' => 'total_prod_' . $iIdProducto ]);
+                $response .= Html::input('text', 'venta['.$iIdProducto.']['.$indice.'][total]', $modelProducto->dm_precio_venta ,[ 'readonly' => true, 'class' => 'ventas form-control', 'id' => 'total_prod_' . $iIdProducto ]);
                 $response .= '</td>';
                 $response .= '<td>';
                 $response .= Html::button( '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>', [ 'class' =>'btn btn-info borrar',  ] );
@@ -140,22 +130,29 @@ class VentasController extends Controller
         exit();
     }
 
-
+    /**
+     * Registra y guarda una venta
+     * @return \yii\web\Response
+     */
     public function actionRegistrarventa(){
 
         $user = Yii::$app->user->identity;
         $aVentas = $_POST['venta'];
-
         $aProductos = array();
         $iTotalVenta = 0;
         if ( count( $aVentas ) > 0 ){
             $i = 0;
             foreach( $aVentas as $iIdProducto => $aData ){
-                $iTotalVenta += $aData['total'];
-                $aProductos[$i]['id'] = $iIdProducto;
-                $aProductos[$i]['cantidad'] = $aData['cantidad'];
+                $iCantidad = 0;
+                foreach ( $aData as $indice => $data ){
+                    $iTotalVenta += $data['total'];
+                    $iCantidad += $data['cantidad'];
+                    $aProductos[$i]['id'] = $iIdProducto;
+                    $aProductos[$i]['cantidad'] = $iCantidad;
+                }
                 $i++;
             }
+
             //registro venta de productos
             $oDateTime = new \DateTime('now');
             $oModelVentaDiario = new DmVentaDiario();
@@ -184,8 +181,13 @@ class VentasController extends Controller
                         $iStockAnterior = $oModelProducto->dm_stock;
                         $newStock = $iStockAnterior - $producto['cantidad'];
                         if ( $newStock < 0 ){
-                        
+                            //no deberian quedar ya productos
                         }
+                        else {
+                            $oModelProducto->dm_stock = $newStock;
+                            $oModelProducto->save();
+                        }
+
                         $bOK = true;
                     }
                     else {
@@ -238,7 +240,6 @@ class VentasController extends Controller
         $aCajas = DmCajas::find()->all();
         
         $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
-
         return $this->render( '_cierre',[
                 'aCierres' => $aCierres,
                 'aCajas' => $aCajas,

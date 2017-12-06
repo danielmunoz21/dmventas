@@ -87,5 +87,5 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
 	
 </div>
 
-<?= Html::submitButton( 'Registrar venta', array( 'class' => 'btn btn-danger' ) ); ?>
+<?= Html::submitButton( 'Registrar venta', array( 'class' => 'btn btn-danger', 'id' => 'registro', 'style' => 'display:none;' ) ); ?>
 <?= Html::endForm() ?> 

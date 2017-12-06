@@ -25,6 +25,7 @@ function procesar(e){
                             if ( response == -1 ){
                                 alert( 'Producto no encontrado' );
                                 $('#searchprod').val( '' );
+                                $('#registro').attr('style', 'none');
                             }
                             else {
                                 
@@ -32,6 +33,7 @@ function procesar(e){
                                 $("#tab_productos  tbody tr.lastrow"+i).after('<tr id="addr'+(i+1)+'" class="lastrow'+(i+1)+'"></tr>');
                                 i++;   
                                 $('#searchprod').val( '' );
+                                $('#registro').removeAttr( 'style' );
                                 calcularTotalVenta();
                             }
                         },

@@ -70,7 +70,7 @@ class Cierre extends \yii\db\ActiveRecord
 
 
         $query = new Query();
-        $query->select( [ 'ventafecha', 'prodcod', 'nomprod', 'SUM(prodprecio) AS total', 'SUM(dm_venta_cantidad) as cantidad', 'cajaid' ] )
+        $query->select( [ 'ventafecha', 'prodcod', 'nomprod', 'prodid', 'SUM(prodprecio) AS total', 'SUM(dm_venta_cantidad) as cantidad', 'cajaid', 'prodprecio' ] )
               ->from( 'cierre' )           
               ->where( [ 'turnoid' => $p_iIdTurno ] ) 
               ->andWhere( [ 'between', 'ventafecha' ,$p_fechaIn, $p_fechaEn  ] )
