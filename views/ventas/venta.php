@@ -49,6 +49,18 @@ function calcularTotalVenta(){
     
     $('#totalventa').html( '' );
     $('#totalventa').html( '$' +  valorGeneral );
+    $('#totalventah').val( valorGeneral );
+    
+}
+
+function calcularVuelto(){
+    var vuelto = 0;
+    var paga = $( '#pagacon' ).val();
+    var total = $('#totalventah').val();
+    vuelto = parseInt( paga ) - parseInt( total );
+
+    $('#vuelto').html( '' );
+    $('#vuelto').html( '$' +  vuelto );
 }
 
 
@@ -62,6 +74,7 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
 
 
 <div id="ventas">
+    <input type="hidden" name="total" value="" id="totalventah">
 	<table id="tab_productos" class="table table-condensed">
 		<thead>
 			<tr>
@@ -80,6 +93,16 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
             <tr>
                 <td colspan="4" style="text-align: right;"><strong>Total Venta</strong></td>
                 <td id="totalventa"></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right;" >Paga con</td>
+                <td><input type="number" value="" id="pagacon" onblur="calcularVuelto()" /></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right;" >Vuelto</td>
+                <td id="vuelto"></td>
                 <td>&nbsp;</td>
             </tr>
         </tfoot>

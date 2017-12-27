@@ -32,7 +32,7 @@ class ProductosController extends Controller
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::className(),
-                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado' ],
+                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado', 'calculoredondeo' ],
                 'rules' => [
                     // allow authenticated users
                     [
@@ -188,5 +188,35 @@ class ProductosController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionCalculoredondeo(){
+
+        if (Yii::$app->request->isAjax) {
+
+           $model = new DmProductos();
+           if ( $model->load( Yii::$app->request->post() ) ){
+
+                $valor = 0;
+                $valor = $model->dm_precio_compra * (( $model->dm_porcentaje_ganancia / 100 ) + 1.19);
+                //descompongo ultimo valor
+
+                $iUltimo = mb_substr( $valor, mb_strlen( $valor ) - 1, mb_strlen( $valor ) );
+
+                if ( $iUltimo > 5 ){
+
+                    $iFaltante = 10 - $iUltimo;
+                    $valor += $iFaltante;
+                }
+                else {
+                    $valor -= $iUltimo;
+                }
+
+                echo $valor;
+           }
+
+
+        }
+        Yii::$app->end();
     }
 }

@@ -17,9 +17,30 @@ $script = <<< JS
         var cal = 0;
 
         if ( iPreCompra !== '' && iPorGanancia !== '' ){
-            cal = parseInt( iPreCompra ) * ( (parseInt( iPorGanancia ) / 100 )+ 1.19 ) ;
-            $( "#precio_venta" ).val( Math.round( cal ) );    
+            /*cal = parseInt( iPreCompra ) * ( (parseInt( iPorGanancia ) / 100 )+ 1.19 ) ;
+            $( "#precio_venta" ).val( Math.round( cal ) );  */
+            calcularredondeo();
+            
         }
+
+    }
+    
+    function calcularredondeo(){
+        var form = $('#productos_form');
+        var resultado = 0;
+         $.ajax({
+            url    : $( '#urlredondeo' ).val(),
+            type   : 'POST',
+            data   : form.serialize(),
+            success: function (response) 
+            {          
+                $( "#precio_venta" ).val( response );
+            },
+            error  : function () 
+            {
+                console.log('internal server error');
+            }
+        });
 
     }
 JS;
@@ -29,7 +50,9 @@ $this->registerJs($script, View::POS_HEAD );
 
 <div class="dm-productos-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['id' => 'productos_form']); ?>
+
+    <?php echo Html::hiddenInput( 'urlcalculo', Yii::$app->urlManager->baseUrl . '/productos/calculoredondeo', [ 'id' => 'urlredondeo' ] ); ?>
 
     <?= $form->field($model, 'dm_codigo')->textInput(['maxlength' => true]) ?>
 

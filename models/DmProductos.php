@@ -78,6 +78,12 @@ class DmProductos extends \yii\db\ActiveRecord
 
     }
 
+    static public function redondeo( $p_iValor ){
+
+        //extraigo el último valor
+
+
+    }
 
 
 }
