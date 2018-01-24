@@ -60,10 +60,15 @@ AppAsset::register($this);
           $menuItems[] = [
             'label' => 'Productos',
             'items' => [
-                [ 'label' => 'Registrar producto', 'url' => [ '/productos/create' ] ],
+                //[ 'label' => 'Registrar producto', 'url' => [ '/productos/create' ] ],
                 [ 'label' => 'Listado de productos', 'url' => [ '/productos' ] ],
             ]
           ];
+
+	      $menuItems[] = [
+		      'label' => 'Registrar producto',
+		      'url' => [ '/productos/create' ]
+	      ];
 
           $menuItems[] = [
             'label' => 'Venta',

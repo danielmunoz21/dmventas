@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\DmVentaApertura;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -80,7 +81,18 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+        	  //valido si el usuario ya registro su caja para el día de hoy
+	          $user = Yii::$app->user->identity;
+
+						$bValido = DmVentaApertura::valCajaExist( $user->getId(), date( 'Y-m-d' ) );
+						if ( $bValido ){
+							return $this->goBack();
+						}
+						else {
+							return $this->redirect( ['/apertura/create'] );
+						}
+
         }
 
 

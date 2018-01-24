@@ -78,10 +78,22 @@ class DmProductos extends \yii\db\ActiveRecord
 
     }
 
-    static public function redondeo( $p_iValor ){
+	/**
+	 * Valida si existe el codigo de barras en la base de datos
+	 * @param $p_iCodigo
+	 *
+	 * @return bool
+	 */
+    static public function validateCode( $p_iCodigo ){
 
-        //extraigo el último valor
+    	$result = self::find()->where( ['dm_codigo' => $p_iCodigo ] )->one();
 
+    	if ( $result == null ){
+    		return false;
+	    }
+	    else {
+    		return true;
+	    }
 
     }
 

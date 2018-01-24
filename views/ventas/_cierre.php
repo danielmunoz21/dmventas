@@ -91,8 +91,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td>Monto apertura de caja</td>
+                        <td>$<?php echo number_format( $iMontoApertura, 0, ',', '.' ) ?></td>
+                    </tr>
                 <?php
-                    $iTotal = 0;
+                    $iTotal = $iMontoApertura;
                    foreach ($aResumen as $iIdCaja => $data){
                        $iTotal += $data['total'];
                        $strTotal  = number_format( $data['total'], 0, ',', '.' );
@@ -106,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tfoot>
                     <tr>
                         <td><strong>Total</strong></td>
-                        <td><strong>$<?php echo number_format( $iTotal, 0, ',', '.' ) ?></strong></td>
+                        <td><strong>$<?php echo number_format( $iTotal, 0, ',', '.' ); ?></strong></td>
                     </tr>
                 </tfoot>
             </table>

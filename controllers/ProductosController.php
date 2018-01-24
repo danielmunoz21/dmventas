@@ -32,7 +32,7 @@ class ProductosController extends Controller
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::className(),
-                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado', 'calculoredondeo' ],
+                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado', 'calculoredondeo', 'generarcodigo' ],
                 'rules' => [
                     // allow authenticated users
                     [
@@ -219,4 +219,26 @@ class ProductosController extends Controller
         }
         Yii::$app->end();
     }
+
+		/**
+	 * Genera codigo de barras
+	 */
+    public function actionGenerarcodigo(){
+
+	    if (Yii::$app->request->isAjax) {
+
+	    	$codigo = rand( 11111,99999);
+				if ( !DmProductos::validateCode( $codigo ) ){
+					echo $codigo;
+				}
+				else {
+					echo '-1';
+				}
+
+	    }
+
+	    Yii::$app->end();
+    }
+
+
 }

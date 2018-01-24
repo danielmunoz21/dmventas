@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 use yii\web\View;
 
 /* @var $this yii\web\View */
@@ -10,20 +10,18 @@ use yii\web\View;
 
 
 $script = <<< JS
-    function calcularPrecioVenta(){
+    /*function calcularPrecioVenta(){
         console.log('function');
         var iPreCompra = $("#precio_compra").val();
         var iPorGanancia = $("#por_ganancia").val();
         var cal = 0;
 
         if ( iPreCompra !== '' && iPorGanancia !== '' ){
-            /*cal = parseInt( iPreCompra ) * ( (parseInt( iPorGanancia ) / 100 )+ 1.19 ) ;
-            $( "#precio_venta" ).val( Math.round( cal ) );  */
             calcularredondeo();
             
         }
 
-    }
+    }*/
     
     function calcularredondeo(){
         var form = $('#productos_form');
@@ -43,18 +41,42 @@ $script = <<< JS
         });
 
     }
+    
+    function generarCodidog(){
+        $.ajax({
+            url    : $( '#urlgencodigo' ).val(),
+            type   : 'POST',
+            success: function (response) 
+            {          
+                if ( response == '-1' ){
+                    alert( 'Código ya existe' );
+                }
+                else {
+                    $( '#codigo' ).val( response );
+                }
+            },
+            error  : function () 
+            {
+                console.log('internal server error');
+            }
+        });
+    }
+    
 JS;
 $this->registerJs($script, View::POS_HEAD );
 
 ?>
 
-<div class="dm-productos-form">
+<div class="dm-productos-form container">
 
     <?php $form = ActiveForm::begin(['id' => 'productos_form']); ?>
 
     <?php echo Html::hiddenInput( 'urlcalculo', Yii::$app->urlManager->baseUrl . '/productos/calculoredondeo', [ 'id' => 'urlredondeo' ] ); ?>
+    <?php echo Html::hiddenInput( 'urlcodigo', Yii::$app->urlManager->baseUrl . '/productos/generarcodigo', [ 'id' => 'urlgencodigo' ] ); ?>
 
-    <?= $form->field($model, 'dm_codigo')->textInput(['maxlength' => true]) ?>
+
+	<?= $form->field($model, 'dm_codigo', [  'inputTemplate' => '<div class="input-group">{input}<span class="input-group-btn">'.
+		                                                       '<button class="btn btn-primary" type="button" onclick="generarCodidog()"><i class="glyphicon glyphicon-barcode" aria-hidden="true"></i> Generar código de barras</button></span></div>' ])->textInput(['maxlength' => true, 'id' => 'codigo']) ?>
 
     <?= $form->field($model, 'dm_nom_producto')->textInput(['maxlength' => true]) ?>
 

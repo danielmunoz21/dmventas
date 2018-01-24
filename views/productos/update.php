@@ -10,6 +10,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Productos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->dm_nom_producto, 'url' => ['view', 'id' => $model->dm_id_producto]];
 $this->params['breadcrumbs'][] = 'Actualizar';
 ?>
+
 <div class="dm-productos-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

@@ -17,6 +17,7 @@ use yii\helpers\Json;
 use yii\web\Session;
 use yii\helpers\Html;
 use app\models\DmCajas;
+use app\models\DmVentaApertura;
 /**
  * VentasController implements the CRUD actions for DmVentas model.
  */
@@ -236,14 +237,17 @@ class VentasController extends Controller
             $oDtDateEnd->modify( '+1 day' ); 
         }
 
+        $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' )  );
 
         $aCajas = DmCajas::find()->all();
-        
+
         $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
+
         return $this->render( '_cierre',[
                 'aCierres' => $aCierres,
                 'aCajas' => $aCajas,
                 'modelTurno' => $modelTurno,
+	              'iMontoApertura' => $iMontoApertura,
             ] );
 
     }
