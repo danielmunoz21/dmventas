@@ -56,11 +56,15 @@ function calcularTotalVenta(){
 function calcularVuelto(){
     var vuelto = 0;
     var paga = $( '#pagacon' ).val();
-    var total = $('#totalventah').val();
-    vuelto = parseInt( paga ) - parseInt( total );
-
-    $('#vuelto').html( '' );
-    $('#vuelto').html( '$' +  vuelto );
+    if ( paga != '' ){
+    
+        var total = $('#totalventah').val();
+        vuelto = parseInt( paga ) - parseInt( total );
+    
+        $('#vuelto').html( '' );
+        $('#vuelto').html( '$' +  vuelto );
+    }
+    
 }
 
 

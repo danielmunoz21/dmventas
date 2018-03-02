@@ -15,7 +15,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": "~2.0.5",
+        "yiisoft/yii2": "~2.0.12",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "kartik-v/yii2-nav-x": "*",
@@ -30,7 +30,8 @@
         "kartik-v/yii2-dynagrid": "@dev",
         "kartik-v/yii2-dialog": "@dev",
         "vilochane/yii2-barcode-generator": "@dev",
-        "picqer/php-barcode-generator": "@dev"
+        "picqer/php-barcode-generator": "@dev",
+        "omnilight/yii2-scheduling": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

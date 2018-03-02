@@ -35,7 +35,7 @@ class DmProductos extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['dm_codigo', 'dm_nom_producto', 'dm_stock', 'dm_precio_compra', 'dm_porcentaje_ganancia', 'dm_precio_venta', 'dm_cajas_id'], 'required'],
+            [['dm_codigo', 'dm_nom_producto', 'dm_stock', 'dm_precio_compra', 'dm_precio_venta', 'dm_cajas_id'], 'required'],
             [['dm_stock_min_compras', 'dm_stock', 'dm_precio_compra', 'dm_precio_venta', 'dm_cajas_id'], 'integer'],
             [['dm_porcentaje_ganancia'], 'number'],
             [['dm_codigo', 'dm_nom_producto'], 'string', 'max' => 255],

@@ -51,7 +51,7 @@ $config = [
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
             ],
         ],
-        'formatter' => [
+        /**'formatter' => [
             'class' => 'yii\i18n\formatter',
             'thousandSeparator' => '.',
             'decimalSeparator' => ',',
@@ -60,10 +60,10 @@ $config = [
             'dateFormat' => 'php:d/m/Y',
             'datetimeFormat' => 'php:d/m/Y H:i:s',
             'numberFormatterOptions' =>[
-                /*NumberFormatter::MIN_FRACTION_DIGITS => 0,
-                NumberFormatter::MAX_FRACTION_DIGITS => 0,*/
+                NumberFormatter::MIN_FRACTION_DIGITS => 0,
+                NumberFormatter::MAX_FRACTION_DIGITS => 0,
             ]
-        ]
+        ]*/
         
     ],
     'modules' => [
