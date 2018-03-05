@@ -1,4 +1,5 @@
 <?php
+use app\models\DmProductos;
 $aResumen = array();
 if ( count( $aCajas ) > 0 ){
 
