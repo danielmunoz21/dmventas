@@ -18,11 +18,16 @@ use yii\web\Session;
 use yii\helpers\Html;
 use app\models\DmCajas;
 use app\models\DmVentaApertura;
+use kartik\mpdf\Pdf;
 /**
  * VentasController implements the CRUD actions for DmVentas model.
  */
 class VentasController extends Controller
 {
+
+		static public  $aCierreData = array();
+		static public $iMontoApert = 0;
+
     /**
      * @inheritdoc
      */
@@ -37,7 +42,7 @@ class VentasController extends Controller
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::className(),
-                'only' => ['venta', 'searchproducto', 'agregarproducto', 'registrarventa'],
+                'only' => ['venta', 'searchproducto', 'agregarproducto', 'registrarventa', 'pdfcierre'],
                 'rules' => [
                     // allow authenticated users
                     [
@@ -227,7 +232,7 @@ class VentasController extends Controller
         $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
         //añadir tiempo de turno
         $oDtDateIn->add( $intervalo );
-    
+        
         $oDtDateEnd = new \DateTime( date( 'Y-m-d' ) );
         //añadir tiempo de turno
         $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
@@ -235,6 +240,7 @@ class VentasController extends Controller
 
         if ( $modelTurno->dm_venta_hora_inicio > $modelTurno->dm_venta_hora_termino ){
             $oDtDateEnd->modify( '+1 day' ); 
+            $oDtDateIn->modify( '-1 day' );
         }
 
         $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' )  );
@@ -242,6 +248,7 @@ class VentasController extends Controller
         $aCajas = DmCajas::find()->all();
 
         $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
+
 
         return $this->render( '_cierre',[
                 'aCierres' => $aCierres,
@@ -251,6 +258,74 @@ class VentasController extends Controller
             ] );
 
     }
+
+    public function actionPdfcierre(){
+
+	    $user = Yii::$app->user->identity;
+
+	    $iIdTurno = $user->id_turno;
+
+	    $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
+
+	    $user = Yii::$app->user->identity;
+
+	    $iIdTurno = $user->id_turno;
+
+	    $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
+
+	    $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
+	    $oDTdbEnd = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_termino ) ) );
+
+	    $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
+
+	    $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
+	    //añadir tiempo de turno
+	    $oDtDateIn->add( $intervalo );
+
+	    $oDtDateEnd = new \DateTime( date( 'Y-m-d' ) );
+	    //añadir tiempo de turno
+	    $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
+	    $oDtDateEnd->add( $intervalo );
+
+	    if ( $modelTurno->dm_venta_hora_inicio > $modelTurno->dm_venta_hora_termino ){
+		    $oDtDateEnd->modify( '+1 day' );
+		    $oDtDateIn->modify( '-1 day' );
+	    }
+
+	    $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' )  );
+
+	    $aCajas = DmCajas::find()->all();
+
+	    $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
+
+	    $content = $this->renderPartial('_pdf', [ 'aCierres' => $aCierres,
+	                                              'aCajas' => $aCajas,
+	                                              'modelTurno' => $modelTurno,
+	                                              'iMontoApertura' => $iMontoApertura, ]);
+
+	    $pdf = new Pdf([
+		    'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts
+		    'format' => Pdf::FORMAT_LETTER,
+		    'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+		    'content' => $content,
+		    'options' => [
+			    'title' => 'Listado de Productos',
+			    'subject' => 'Listado de productos con códigos de barra incluidos'
+		    ],
+		    'methods' => [
+			    'SetHeader' => ['DmVentas: ' . date("d/m/Y")],
+			    'SetFooter' => ['|Página {PAGENO}|'],
+		    ],
+		    'destination' => Pdf::DEST_BROWSER,
+		    'filename'=> 'CIERRE_TURNO_'. $modelTurno->dm_nombre .'_'.$user->username.'.pdf',
+	    ]);
+
+	    // return the pdf output as per the destination setting
+	    $pdf->render();
+
+
+    }
+
 
 
     
