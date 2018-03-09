@@ -192,6 +192,7 @@ class VentasController extends Controller
                         else {
                             $oModelProducto->dm_stock = $newStock;
                             $oModelProducto->save();
+
                         }
 
                         $bOK = true;
@@ -216,45 +217,63 @@ class VentasController extends Controller
 
 
     public function actionCaja(){
-     
-        $user = Yii::$app->user->identity;
 
+        $user = Yii::$app->user->identity;
 
         $iIdTurno = $user->id_turno;
 
         $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
 
-        $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
+		    $oSession = Yii::$app->session;
+		    $oSession->open();
+		    $iIdApertura = $oSession->get( 'id_apertura' );
+		    $oSession->close();
+
+		    $modelApertura = DmVentaApertura::findOne( $iIdApertura );
+
+	      $oDTAC = new \DateTime( date( 'Y-m-d' ) );
+
+		    if ( $modelApertura !== null ){
+			    $oDtDateIn = $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
+		    }
+		    else {
+			    $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
+			    $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
+			    $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
+			    //añadir tiempo de turno
+			    $oDtDateIn->add( $intervalo );
+		    }
+
         $oDTdbEnd = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_termino ) ) );
 
-        $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
-        
-        $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
-        //añadir tiempo de turno
-        $oDtDateIn->add( $intervalo );
-        
         $oDtDateEnd = new \DateTime( date( 'Y-m-d' ) );
         //añadir tiempo de turno
         $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
         $oDtDateEnd->add( $intervalo );
 
-        if ( $modelTurno->dm_venta_hora_inicio > $modelTurno->dm_venta_hora_termino ){
-            $oDtDateEnd->modify( '+1 day' ); 
-            $oDtDateIn->modify( '-1 day' );
+        if ( $oDtDateIn->format('H:i:s') > $modelTurno->dm_venta_hora_termino ){
+            $oDtDateEnd->modify( '+1 day' );
         }
 
-        $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' )  );
+        if ( $modelApertura !== null ) {
+	        $iMontoApertura = $modelApertura->dm_apert_monto;
+        }
+        else{
+	        $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' ), $iIdTurno  );
+        }
+
 
         $aCajas = DmCajas::find()->all();
 
-        $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
-
+        $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ), $user->getId() );
 
         return $this->render( '_cierre',[
                 'aCierres' => $aCierres,
                 'aCajas' => $aCajas,
                 'modelTurno' => $modelTurno,
 	              'iMontoApertura' => $iMontoApertura,
+	              'user' => $user,
+	              'strFecha' => $oDTAC->format( 'Y-m-d' ),
             ] );
 
     }
@@ -267,41 +286,55 @@ class VentasController extends Controller
 
 	    $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
 
-	    $user = Yii::$app->user->identity;
+	    $oSession = Yii::$app->session;
+	    $oSession->open();
+	    $iIdApertura = $oSession->get( 'id_apertura' );
+	    $oSession->close();
 
-	    $iIdTurno = $user->id_turno;
+	    $modelApertura = DmVentaApertura::findOne( $iIdApertura );
 
-	    $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
+	    $oDTAC = new \DateTime( date( 'Y-m-d' ) );
 
-	    $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
+	    if ( $modelApertura !== null ){
+		    $oDtDateIn = $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
+	    }
+	    else {
+		    $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
+		    $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
+		    $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
+		    //añadir tiempo de turno
+		    $oDtDateIn->add( $intervalo );
+	    }
+
 	    $oDTdbEnd = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_termino ) ) );
-
-	    $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
-
-	    $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
-	    //añadir tiempo de turno
-	    $oDtDateIn->add( $intervalo );
 
 	    $oDtDateEnd = new \DateTime( date( 'Y-m-d' ) );
 	    //añadir tiempo de turno
 	    $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
 	    $oDtDateEnd->add( $intervalo );
 
-	    if ( $modelTurno->dm_venta_hora_inicio > $modelTurno->dm_venta_hora_termino ){
+	    if ( $oDtDateIn->format('H:i:s') > $modelTurno->dm_venta_hora_termino ){
 		    $oDtDateEnd->modify( '+1 day' );
-		    $oDtDateIn->modify( '-1 day' );
 	    }
 
-	    $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' )  );
+	    if ( $modelApertura !== null ) {
+		    $iMontoApertura = $modelApertura->dm_apert_monto;
+	    }
+	    else{
+		    $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' ), $iIdTurno  );
+	    }
+
 
 	    $aCajas = DmCajas::find()->all();
 
-	    $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
-
+	    $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ), $user->getId() );
 	    $content = $this->renderPartial('_pdf', [ 'aCierres' => $aCierres,
 	                                              'aCajas' => $aCajas,
 	                                              'modelTurno' => $modelTurno,
-	                                              'iMontoApertura' => $iMontoApertura, ]);
+	                                              'iMontoApertura' => $iMontoApertura,
+	                                              'user' => $user,
+	                                              'strFecha' => $oDTAC->format( 'Y-m-d' ),
+		    ]);
 
 	    $pdf = new Pdf([
 		    'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts

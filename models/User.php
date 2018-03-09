@@ -30,7 +30,8 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
             return null;
         }
         else {
-      
+
+
             $aUserInfo = [
                 'id' => $oUsers->dm_usuario_id,
                 'nombre' => $oUsers->dm_usuario_nombre,
@@ -65,14 +66,14 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username, $p_iIdTurno)
     {
-        
-        
+
         $oUsers = DmUsuario::findOne( [ 'dm_nom_login' => $username ] );
         if ( !$oUsers ){
             return null;
         }
         else {
-            
+	        $oSession = \Yii::$app->session;
+	        $oSession->open();
             $aUserInfo = [
                 'id' => $oUsers->dm_usuario_id,
                 'nombre' => $oUsers->dm_usuario_nombre,
@@ -81,7 +82,8 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
                 'password' => $oUsers->dm_usuario_clave,
                 'id_turno' => $p_iIdTurno,
             ];
-            $_SESSION['id_turno'] = $p_iIdTurno;
+            $oSession->set( 'id_turno', $p_iIdTurno );
+            $oSession->close();
             return new static( $aUserInfo );
         }
 

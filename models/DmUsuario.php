@@ -70,4 +70,9 @@ class DmUsuario extends \yii\db\ActiveRecord
     {
         return $this->hasMany(DmVentaDiaria::className(), ['dm_usuario_dm_usuario_id' => 'dm_usuario_id']);
     }
+
+    static public function getAll(){
+	    return \yii\helpers\ArrayHelper::map( DmUsuario::find()->all(), 'dm_usuario_id', 'dm_usuario_nombre' );
+    }
+
 }

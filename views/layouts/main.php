@@ -51,6 +51,7 @@ AppAsset::register($this);
                 [ 'label' => 'Usuarios', 'url' => ['/usuario'] ],
                 [ 'label' => 'Cajas', 'url' => ['/cajas'] ],
                 [ 'label' => 'Turnos', 'url' => ['/turnos'] ],
+                [ 'label' => 'Retirnos ingresados en el sistema', 'url' => ['/retiros'] ],
             ],
             
           ];
@@ -84,10 +85,14 @@ AppAsset::register($this);
             'label' => 'Mermas',
             'url' => [ '/mermas/index' ]
           ];
-           
+
+	      $menuItems[] = [
+		      'label' => 'Retiro',
+		      'url' => [ '/retiros/create' ]
+	      ];
            
           $menuItems[] = [
-              'label' => 'Logout (' . Yii::$app->user->identity->nombre . ')',
+              'label' => 'Cerrar programa (' . Yii::$app->user->identity->nombre . ')',
               'url' => ['/site/logout'],
               'linkOptions' => ['data-method' => 'post']
           ];

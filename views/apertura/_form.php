@@ -20,6 +20,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'dm_apert_monto')->textInput(['maxlength' => true])->hint( 'Monto con el cual se inicia su periodo' ) ?>
 	<?php echo yii\helpers\Html::activeHiddenInput( $model, 'dm_apert_fecha' ); ?>
 	<?php echo yii\helpers\Html::activeHiddenInput( $model, 'dm_usuario_id' ); ?>
+	<?php echo yii\helpers\Html::activeHiddenInput( $model, 'dm_turnos_id' ); ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Guardar' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -4,4 +4,6 @@
 <?php echo $this->render( '__datacierre', [ 'aCierres' => $aCierres,
                                             'aCajas' => $aCajas,
                                             'modelTurno' => $modelTurno,
-                                            'iMontoApertura' => $iMontoApertura, ] ); ?>
+                                            'iMontoApertura' => $iMontoApertura,
+                                            'user' => $user,
+                                            'strFecha' =>$strFecha ] ); ?>

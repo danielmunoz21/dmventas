@@ -87,4 +87,8 @@ class DmVentaTurnos extends \yii\db\ActiveRecord
         
         return $dataProvider;*/
     }
+
+    static public function getAll(){
+	    return \yii\helpers\ArrayHelper::map( DmVentaTurnos::find()->all(), 'dm_venta_turnos_id', 'dm_nombre' );
+    }
 }

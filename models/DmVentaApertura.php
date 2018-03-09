@@ -12,6 +12,7 @@ use yii\db\Query;
  * @property string $dm_apert_monto
  * @property string $dm_apert_fecha
  * @property string $dm_usuario_id
+ * @property int $dm_turnos_id
  */
 class DmVentaApertura extends \yii\db\ActiveRecord
 {
@@ -30,7 +31,7 @@ class DmVentaApertura extends \yii\db\ActiveRecord
     {
         return [
             [['dm_apert_monto', 'dm_apert_fecha', 'dm_usuario_id'], 'required'],
-            [['dm_apert_monto', 'dm_usuario_id'], 'integer'],
+	        [['dm_apert_monto', 'dm_usuario_id', 'dm_turnos_id'], 'integer'],
             [['dm_apert_fecha'], 'safe'],
         ];
     }
@@ -45,6 +46,7 @@ class DmVentaApertura extends \yii\db\ActiveRecord
             'dm_apert_monto' => 'Monto',
             'dm_apert_fecha' => 'Dm Apert Fecha',
             'dm_usuario_id' => 'Dm Usuario ID',
+            'dm_turnos_id' => 'Dm Turnos ID',
         ];
     }
 
@@ -53,17 +55,16 @@ class DmVentaApertura extends \yii\db\ActiveRecord
 	 * Valida que la caja para el usuario y el dia especificado no se tenga registrada
 	 * @param string $p_iUserId
 	 * @param date $p_strFecha
+	 * @param integer $p_iIdTurno
 	 *
 	 * @return bool
 	 */
-    static public function valCajaExist( $p_iUserId, $p_strFecha ){
-
-    	  //$oModel = self::find()->where([ 'dm_usuario_id' => $p_iUserId, 'dm_apert_fecha' => $p_strFecha ])->one();
+    static public function valCajaExist( $p_iUserId, $p_strFecha, $p_iIdTurno ){
 
 	      $query = new Query();
 	      $query->select( 'COUNT(*) as total' )
 		          ->from( 'dm_venta_apertura' )
-	            ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId] );
+	            ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId, 'dm_turnos_id' => $p_iIdTurno] );
 
 	      $iCount = $query->one();
 
@@ -83,16 +84,32 @@ class DmVentaApertura extends \yii\db\ActiveRecord
 	 *
 	 * @return bool|integer
 	 */
-    static public function getMontoApertura( $p_iUserId, $p_strFecha ){
+    static public function getMontoApertura( $p_iUserId, $p_strFecha, $p_iIdTurno ){
 	    $query = new Query();
 	    $query->select( 'dm_apert_monto' )
 	          ->from( 'dm_venta_apertura' )
-	          ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId] );
+	          ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId, 'dm_turnos_id' => $p_iIdTurno] );
 
 	    $row = $query->one();
 
 	    if ( $row != false ){
 		    return $row['dm_apert_monto'];
+	    }
+	    else {
+		    return false;
+	    }
+    }
+
+    static public function getIdApert( $p_iUserId, $p_strFecha, $p_iIdTurno ){
+	    $query = new Query();
+	    $query->select( 'dm_apert_id' )
+	          ->from( 'dm_venta_apertura' )
+	          ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId, 'dm_turnos_id' => $p_iIdTurno] );
+
+	    $row = $query->one();
+
+	    if ( $row != false ){
+		    return $row['dm_apert_id'];
 	    }
 	    else {
 		    return false;

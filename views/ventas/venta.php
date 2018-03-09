@@ -68,8 +68,9 @@ function calcularVuelto(){
 }
 
 
+
 JS;
-$this->registerJs($script2, View::POS_BEGIN );
+$this->registerJs($script2, View::POS_HEAD );
 
 
 echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart/form-data'])

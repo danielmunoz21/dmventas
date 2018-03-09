@@ -9,16 +9,17 @@ use yii\db\Query;
  * This is the model class for table "cierre".
  *
  * @property string $nomturno
- * @property integer $turnoid
+ * @property int $turnoid
  * @property string $ventadid
  * @property string $ventafecha
- * @property string $prodcod
+ * @property string $prodcod codigo de barra
  * @property string $nomprod
  * @property string $prodid
- * @property integer $prodprecio
+ * @property int $prodprecio
  * @property string $dm_venta_cantidad
  * @property string $cajanom
- * @property integer $cajaid
+ * @property int $cajaid
+ * @property string $userid
  */
 class Cierre extends \yii\db\ActiveRecord
 {
@@ -37,7 +38,7 @@ class Cierre extends \yii\db\ActiveRecord
     {
         return [
             [['turnoid', 'ventafecha'], 'required'],
-            [['turnoid', 'ventadid', 'prodid', 'prodprecio', 'dm_venta_cantidad', 'cajaid'], 'integer'],
+            [['turnoid', 'ventadid', 'prodid', 'prodprecio', 'dm_venta_cantidad', 'cajaid', 'userid'], 'integer'],
             [['ventafecha'], 'safe'],
             [['nomturno', 'cajanom'], 'string', 'max' => 45],
             [['prodcod', 'nomprod'], 'string', 'max' => 255],
@@ -61,27 +62,32 @@ class Cierre extends \yii\db\ActiveRecord
             'dm_venta_cantidad' => 'Dm Venta Cantidad',
             'cajanom' => 'Cajanom',
             'cajaid' => 'Cajaid',
+            'userid' => 'Userid',
         ];
     }
 
-
-    
-    static public function getAllCierres( $p_iIdTurno, $p_fechaIn, $p_fechaEn ){
-
-
-        $query = new Query();
-        $query->select( [ 'ventafecha', 'prodcod', 'nomprod', 'prodid', 'prodprecio AS total', 'SUM(dm_venta_cantidad) as cantidad', 'cajaid', 'prodprecio' ] )
-              ->from( 'cierre' )           
-              ->where( [ 'turnoid' => $p_iIdTurno ] ) 
-              ->andWhere( [ 'between', 'ventafecha' ,$p_fechaIn, $p_fechaEn  ] )
-              ->addOrderBy( [ 'cajaid' => SORT_ASC ] )
-              ->groupBy( 'prodid' );
-              
-        return $query->all();
+	/**
+	 * Extrae y genera el cierre de turno del usuario
+	 * @param $p_iIdTurno ID TURNO
+	 * @param $p_fechaIn FECHA DE INICIO DE TURNO
+	 * @param $p_fechaEn FECHA DE TERMINO DE TURNO
+	 * @param $p_iUserId USUARIO QUE REGISTRO LAS VENTAS
+	 *
+	 * @return mixed
+	 */
+		static public function getAllCierres( $p_iIdTurno, $p_fechaIn, $p_fechaEn, $p_iUserId ){
 
 
-    }
+			$query = new Query();
+			$query->select( [ 'ventafecha', 'prodcod', 'nomprod', 'prodid', 'prodprecio AS total', 'SUM(dm_venta_cantidad) as cantidad', 'cajaid', 'prodprecio' ] )
+			      ->from( 'cierre' )
+			      ->where( [ 'turnoid' => $p_iIdTurno, 'userid' => $p_iUserId ] )
+			      ->andWhere( [ 'between', 'ventafecha' ,$p_fechaIn, $p_fechaEn  ] )
+			      ->addOrderBy( [ 'cajaid' => SORT_ASC ] )
+			      ->groupBy( 'prodid' );
+
+			return $query->all();
 
 
-
+		}
 }

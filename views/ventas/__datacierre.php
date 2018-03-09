@@ -1,13 +1,16 @@
 <?php
 use app\models\DmProductos;
+use app\models\DmVentaRetiros;
 $aResumen = array();
+$iTotalRetiros = 0;
 if ( count( $aCajas ) > 0 ){
-
+    
 	foreach( $aCajas as $oModelCaja ){
 
 		$iTotalCantidad = 0;
 		$iTotalVentas   = 0;
-
+		$iMonto = DmVentaRetiros::getMountbyData( $user->id, $user->id_turno, $oModelCaja->dm_cajas_id, $strFecha );
+        $iTotalRetiros += $iMonto;
 		?>
 
 		<div class="panel panel-default">
@@ -56,10 +59,20 @@ if ( count( $aCajas ) > 0 ){
 				</tbody>
 				<tfoot>
 				<tr>
-					<td colspan="4"><strong>TOTAL</strong></td>
+					<td colspan="4"><strong>TOTAL EN VENTAS</strong></td>
 					<td><?php echo $iTotalCantidad ?></td>
 					<td><strong><?php echo '$'. number_format( $iTotalVentas, 0, ',' , '.' ); ?></strong></td>
 				</tr>
+                <tr>
+                    <td colspan="4"><strong>TOTAL DE RETIROS</strong></td>
+                    <td>&nbsp;</td>
+                    <td><strong><?php echo '$'. number_format( $iMonto, 0, ',' , '.' ); ?></strong></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><strong>SALDO EN CAJA</strong></td>
+                    <td>&nbsp;</td>
+                    <td><strong><?php echo '$'. number_format( ( $iTotalVentas - $iMonto ), 0, ',' , '.' ); ?></strong></td>
+                </tr>
 				</tfoot>
 			</table>
 		</div>
@@ -92,11 +105,16 @@ if ( count( $aCajas ) > 0 ){
 				echo '<td>$'. $strTotal .'</td>';
 				echo '</tr>';
 			}
+			$iTotal = $iTotal - $iTotalRetiros;
 			?>
+            <tr>
+                <td>TOTAL DE RETIROS</td>
+                <td>$<?php echo number_format( $iTotalRetiros, 0, ',', '.' ) ?></td>
+            </tr>
 			</tbody>
 			<tfoot>
 			<tr>
-				<td><strong>Total</strong></td>
+				<td><strong>SALDO TOTAL EN CAJA</strong></td>
 				<td><strong>$<?php echo number_format( $iTotal, 0, ',', '.' ); ?></strong></td>
 			</tr>
 			</tfoot>

@@ -4,13 +4,22 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\web\View;
 
-$this->title = 'Agregar Stock';
+$this->title = 'Agregar Stock PRODUCTO : ' . $model->dm_nom_producto;
 $this->params['breadcrumbs'][] = ['label' => 'Productos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 
 <div class="dm-ventas-stock">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <p>
+        <?php
+          echo 'STOCK ACTUAL : ' . $model->dm_stock;
+          $model->dm_stock = '';
+        ?>
+    </p>
 	<?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'dm_codigo')->hiddenInput()->label(false);?>
@@ -31,6 +40,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="form-group">
         <?= Html::submitButton('Actualizar Stock', ['class' => 'btn btn-primary']) ?>
+    </div>
+    <div class="form-group">
+        <?= Html::a('Volver', ['/productos'] ,['class' => 'btn btn-danger']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

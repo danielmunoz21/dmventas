@@ -15,7 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php echo $this->render( '__datacierre', [ 'aCierres' => $aCierres,
                                             'aCajas' => $aCajas,
                                             'modelTurno' => $modelTurno,
-                                            'iMontoApertura' => $iMontoApertura, ] ); ?>
+                                            'iMontoApertura' => $iMontoApertura,
+                                            'user' => $user,
+                                            'strFecha' =>$strFecha] ); ?>
 
 <?php
 echo Html::a('<i class="fa glyphicon glyphicon-download-alt"></i> Generar Retiro turno', ['/ventas/pdfcierre'], [

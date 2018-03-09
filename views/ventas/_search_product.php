@@ -26,6 +26,7 @@ function procesar(e){
                                 alert( 'Producto no encontrado' );
                                 $('#searchprod').val( '' );
                                 $('#registro').attr('style', 'none');
+                                $('#searchprod').focus();
                             }
                             else {
                                 
@@ -35,6 +36,7 @@ function procesar(e){
                                 $('#searchprod').val( '' );
                                 $('#registro').removeAttr( 'style' );
                                 calcularTotalVenta();
+                                $('#searchprod').focus();
                             }
                         },
                         error  : function () 
@@ -54,6 +56,11 @@ jQuery(document).on('click', '.borrar', function (event) {
     jQuery(this).closest('tr').remove();
     calcularTotalVenta();
 });
+
+$(document).ready(function(){
+    $('#searchprod').focus();
+});
+
 JS;
 $this->registerJs($script, View::POS_END);
 

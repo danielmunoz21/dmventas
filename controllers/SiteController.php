@@ -85,8 +85,15 @@ class SiteController extends Controller
         	  //valido si el usuario ya registro su caja para el día de hoy
 	          $user = Yii::$app->user->identity;
 
-						$bValido = DmVentaApertura::valCajaExist( $user->getId(), date( 'Y-m-d' ) );
+						$bValido = DmVentaApertura::valCajaExist( $user->getId(), date( 'Y-m-d' ), $user->id_turno );
 						if ( $bValido ){
+
+							$iIdapertura = DmVentaApertura::getIdApert( $user->getId(), date( 'Y-m-d' ), $user->id_turno );
+
+							$oSession = Yii::$app->session;
+							$oSession->open();
+								$oSession->set( 'id_apertura', $iIdapertura );
+							$oSession->close();
 							return $this->goBack();
 						}
 						else {
@@ -110,7 +117,10 @@ class SiteController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
+		    $oSession = Yii::$app->session;
+			    $oSession->open();
+			    $oSession->destroy();
+		    $oSession->close();
         return $this->goHome();
     }
 
