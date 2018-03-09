@@ -102,14 +102,14 @@ class DmVentaApertura extends \yii\db\ActiveRecord
 
     static public function getIdApert( $p_iUserId, $p_strFecha, $p_iIdTurno ){
 	    $query = new Query();
-	    $query->select( 'dm_apert_id' )
+	    $query->select( 'MAX(dm_apert_id) AS ID' )
 	          ->from( 'dm_venta_apertura' )
 	          ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId, 'dm_turnos_id' => $p_iIdTurno] );
 
 	    $row = $query->one();
 
 	    if ( $row != false ){
-		    return $row['dm_apert_id'];
+		    return $row['ID'];
 	    }
 	    else {
 		    return false;

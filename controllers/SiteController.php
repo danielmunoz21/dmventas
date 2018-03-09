@@ -11,6 +11,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\DmVentaTurnos;
 
+
 class SiteController extends Controller
 {
     /**
@@ -85,10 +86,16 @@ class SiteController extends Controller
         	  //valido si el usuario ya registro su caja para el día de hoy
 	          $user = Yii::$app->user->identity;
 
-						$bValido = DmVentaApertura::valCajaExist( $user->getId(), date( 'Y-m-d' ), $user->id_turno );
+	          $modelTurno = DmVentaTurnos::findOne( $user->id_turno );
+	          $oDtActual = new \DateTime( date('Y-m-d' ) );
+	          if ( $modelTurno->dm_venta_hora_inicio > $modelTurno->dm_venta_hora_termino ){
+	          	$oDtActual->modify( '-1day' );
+	          }
+	          
+						$bValido = DmVentaApertura::valCajaExist( $user->getId(), $oDtActual->format( 'Y-m-d' ), $user->id_turno );
 						if ( $bValido ){
 
-							$iIdapertura = DmVentaApertura::getIdApert( $user->getId(), date( 'Y-m-d' ), $user->id_turno );
+							$iIdapertura = DmVentaApertura::getIdApert( $user->getId(), $oDtActual->format( 'Y-m-d' ), $user->id_turno );
 
 							$oSession = Yii::$app->session;
 							$oSession->open();
