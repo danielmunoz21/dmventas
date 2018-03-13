@@ -66,10 +66,12 @@ AppAsset::register($this);
             ]
           ];
 
-	      $menuItems[] = [
-		      'label' => 'Registrar producto',
-		      'url' => [ '/productos/create' ]
-	      ];
+          if ( Yii::$app->user->identity->tipo == 1 ) {
+	          $menuItems[] = [
+		          'label' => 'Registrar producto',
+		          'url'   => [ '/productos/create' ]
+	          ];
+          }
 
           $menuItems[] = [
             'label' => 'Venta',

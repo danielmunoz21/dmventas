@@ -87,11 +87,12 @@ class SiteController extends Controller
 	          $user = Yii::$app->user->identity;
 
 	          $modelTurno = DmVentaTurnos::findOne( $user->id_turno );
-	          $oDtActual = new \DateTime( date('Y-m-d' ) );
-	          if ( $modelTurno->dm_venta_hora_inicio > $modelTurno->dm_venta_hora_termino ){
+
+	          $oDtActual = new \DateTime( date('Y-m-d H:i:s' ) );
+	          if ( $modelTurno->dm_venta_hora_inicio > $oDtActual->format('H:i:s') ){
 	          	$oDtActual->modify( '-1day' );
 	          }
-	          
+
 						$bValido = DmVentaApertura::valCajaExist( $user->getId(), $oDtActual->format( 'Y-m-d' ), $user->id_turno );
 						if ( $bValido ){
 

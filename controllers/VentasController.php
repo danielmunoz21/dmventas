@@ -186,14 +186,16 @@ class VentasController extends Controller
                         $oModelProducto = DmProductos::findOne( $producto['id'] );
                         $iStockAnterior = $oModelProducto->dm_stock;
                         $newStock = $iStockAnterior - $producto['cantidad'];
-                        if ( $newStock < 0 ){
+                        $oModelProducto->dm_stock = $newStock;
+                        $oModelProducto->save();
+                        /*if ( $newStock < 0 ){
                             //no deberian quedar ya productos
                         }
                         else {
                             $oModelProducto->dm_stock = $newStock;
                             $oModelProducto->save();
 
-                        }
+                        }*/
 
                         $bOK = true;
                     }
@@ -251,6 +253,10 @@ class VentasController extends Controller
         $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
         $oDtDateEnd->add( $intervalo );
 
+        $oDTApert = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
+		    if ( $oDTApert->format( 'H:i:s' ) > $oDtDateEnd->format('H:i:s') ){
+			    $oDtDateEnd->modify( '+1day' );
+		    }
 
         if ( $modelApertura !== null ) {
 	        $iMontoApertura = $modelApertura->dm_apert_monto;
@@ -277,9 +283,7 @@ class VentasController extends Controller
 
     public function actionPdfcierre(){
 
-    	echo '<pre>';
-    	  print_r( $_SESSION );
-    	echo '</pre>';
+
 	    $user = Yii::$app->user->identity;
 
 	    $iIdTurno = $user->id_turno;
@@ -313,6 +317,10 @@ class VentasController extends Controller
 	    $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
 	    $oDtDateEnd->add( $intervalo );
 
+	    $oDTApert = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
+	    if ( $oDTApert->format( 'H:i:s' ) > $oDtDateEnd->format('H:i:s') ){
+		    $oDtDateEnd->modify( '+1day' );
+	    }
 
 	    if ( $modelApertura !== null ) {
 		    $iMontoApertura = $modelApertura->dm_apert_monto;

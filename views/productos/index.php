@@ -14,18 +14,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+      <?php
+      if ( Yii::$app->user->identity->tipo == 1 ) {
 
-    <p>
-        <?= Html::a('Registrar nuevo Producto', ['create'], ['class' => 'btn btn-success']) ?>
-        <?php
-            echo Html::a('<i class="fa glyphicon glyphicon-download-alt"></i> Generar Listado Imprimible', ['/productos/listado'], [
-                'class'=>'btn btn-info',
-                'target'=>'_blank',
-                'data-toggle'=>'tooltip',
-                'title'=>'Genera PDF con listado de productos y codigos de estos'
-            ]);
-        ?>
-    </p>
+          ?>
+          <p>
+                  <?= Html::a( 'Registrar nuevo Producto', [ 'create' ], [ 'class' => 'btn btn-success' ] ) ?>
+                  <?php
+                  echo Html::a( '<i class="fa glyphicon glyphicon-download-alt"></i> Generar Listado Imprimible', [ '/productos/listado' ], [
+                      'class'       => 'btn btn-info',
+                      'target'      => '_blank',
+                      'data-toggle' => 'tooltip',
+                      'title'       => 'Genera PDF con listado de productos y codigos de estos'
+                  ] );
+                  ?>
+          </p>
+          <?php
+      }
+    ?>
 <?php Pjax::begin(); ?>
   <?= GridView::widget([
         'dataProvider' => $dataProvider,
