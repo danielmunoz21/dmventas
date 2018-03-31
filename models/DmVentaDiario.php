@@ -46,10 +46,10 @@ class DmVentaDiario extends \yii\db\ActiveRecord
     {
         return [
             'dm_venta_diario_id' => 'Dm Venta Diario ID',
-            'dm_venta_total' => 'Dm Venta Total',
-            'dm_venta_datetime' => 'Dm Venta Datetime',
-            'dm_usuario_dm_usuario_id' => 'Dm Usuario Dm Usuario ID',
-            'dm_venta_turno_id' => 'Dm Venta Turno ID',
+            'dm_venta_total' => 'Total',
+            'dm_venta_datetime' => 'Fecha',
+            'dm_usuario_dm_usuario_id' => 'Usuario',
+            'dm_venta_turno_id' => 'Turno',
         ];
     }
 

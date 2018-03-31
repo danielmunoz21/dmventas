@@ -18,7 +18,7 @@ class DmVentaTurnosSearch extends DmVentaTurnos
     public function rules()
     {
         return [
-            [['dm_venta_turnos_id'], 'integer'],
+            [['dm_venta_turnos_id', 'dm_venta_cierre_sig_dia', 'dm_venta_turno_orden'], 'integer'],
             [['dm_nombre', 'dm_venta_hora_inicio', 'dm_venta_hora_termino'], 'safe'],
         ];
     }
@@ -62,6 +62,8 @@ class DmVentaTurnosSearch extends DmVentaTurnos
             'dm_venta_turnos_id' => $this->dm_venta_turnos_id,
             'dm_venta_hora_inicio' => $this->dm_venta_hora_inicio,
             'dm_venta_hora_termino' => $this->dm_venta_hora_termino,
+	          'dm_venta_cierre_sig_dia' => $this->dm_venta_cierre_sig_dia,
+	          'dm_venta_turno_orden' => $this->dm_venta_turno_orden,
         ]);
 
         $query->andFilterWhere(['like', 'dm_nombre', $this->dm_nombre]);

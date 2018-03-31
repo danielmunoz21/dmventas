@@ -61,6 +61,12 @@ $(document).ready(function(){
     $('#searchprod').focus();
 });
 
+jQuery(document).ready(function() {
+    setTimeout(function() {
+        jQuery("#ocultar").fadeOut(1500);
+    },3000);
+});
+
 JS;
 $this->registerJs($script, View::POS_END);
 

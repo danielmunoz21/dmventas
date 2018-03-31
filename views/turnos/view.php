@@ -30,6 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             //'dm_venta_turnos_id',
             'dm_nombre',
+            'dm_venta_turno_orden',
+            [
+                'attribute' => 'dm_venta_cierre_sig_dia',
+                'value' => ( $model->dm_venta_cierre_sig_dia  == 1 ) ? 'Si' : 'No'
+            ],
             [
                 'attribute' => 'dm_venta_hora_inicio',
                 'format' => 'raw',

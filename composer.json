@@ -31,7 +31,8 @@
         "kartik-v/yii2-dialog": "@dev",
         "vilochane/yii2-barcode-generator": "@dev",
         "picqer/php-barcode-generator": "@dev",
-        "omnilight/yii2-scheduling": "*"
+        "omnilight/yii2-scheduling": "*",
+        "kartik-v/yii2-date-range": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

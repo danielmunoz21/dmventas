@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\DmVentaTurnos;
+use app\lib\LibreryFunction;
 
 
 class SiteController extends Controller
@@ -73,48 +74,45 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+			try{
+				$aTurnos = \yii\helpers\ArrayHelper::map( DmVentaTurnos::find()->all(), 'dm_venta_turnos_id', 'dm_nombre' );
 
-        $aTurnos = \yii\helpers\ArrayHelper::map( DmVentaTurnos::find()->all(), 'dm_venta_turnos_id', 'dm_nombre' );
+				if (!Yii::$app->user->isGuest) {
+					return $this->goHome();
+				}
 
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+				$model = new LoginForm();
+				if ($model->load(Yii::$app->request->post()) && $model->login()) {
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+					//valido si el usuario ya registro su caja para el día de hoy
+					$user = Yii::$app->user->identity;
+					$oLibrery = new LibreryFunction();
+					$bValido = $oLibrery->ValidateApertTurn( $user->getId(), $user->id_turno );
 
-        	  //valido si el usuario ya registro su caja para el día de hoy
-	          $user = Yii::$app->user->identity;
+					if ( $bValido ){
 
-	          $modelTurno = DmVentaTurnos::findOne( $user->id_turno );
+						$iIdapertura = DmVentaApertura::getIdApert( $user->getId(), $oLibrery->get_fecha_actual(), $user->id_turno );
 
-	          $oDtActual = new \DateTime( date('Y-m-d H:i:s' ) );
-	          if ( $modelTurno->dm_venta_hora_inicio > $oDtActual->format('H:i:s') ){
-	          	$oDtActual->modify( '-1day' );
-	          }
-
-						$bValido = DmVentaApertura::valCajaExist( $user->getId(), $oDtActual->format( 'Y-m-d' ), $user->id_turno );
-						if ( $bValido ){
-
-							$iIdapertura = DmVentaApertura::getIdApert( $user->getId(), $oDtActual->format( 'Y-m-d' ), $user->id_turno );
-
-							$oSession = Yii::$app->session;
-							$oSession->open();
-								$oSession->set( 'id_apertura', $iIdapertura );
-							$oSession->close();
-							return $this->goBack();
-						}
-						else {
+						$oSession = Yii::$app->session;
+						$oSession->open();
+							$oSession->set( 'id_apertura', $iIdapertura );
+						$oSession->close();
+						return $this->goBack();
+					}
+					else {
 							return $this->redirect( ['/apertura/create'] );
-						}
+					}
+				}
 
-        }
+				return $this->render('login', [
+					'model' => $model,
+					'aTurnos' => $aTurnos
+				]);
+			}
+			catch (\Exception $e){
+				error_log( 'LOGIN ERROR ' .  $e->getMessage() );
+			}
 
-
-        return $this->render('login', [
-            'model' => $model,
-            'aTurnos' => $aTurnos
-        ]);
     }
 
     /**

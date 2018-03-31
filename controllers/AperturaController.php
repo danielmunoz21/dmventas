@@ -6,6 +6,7 @@ use Yii;
 use app\models\DmVentaApertura;
 use app\models\DmVentaAperturaSearch;
 use yii\web\Controller;
+use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -76,26 +77,31 @@ class AperturaController extends Controller
      */
     public function actionCreate()
     {
+				try{
+					$model = new DmVentaApertura();
+					$user = Yii::$app->user->identity;
+					$model->dm_usuario_id = $user->getId();
+					$model->dm_apert_fecha = date( 'Y-m-d H:i:s' );
+					$model->dm_turnos_id = $user->id_turno;
 
-        $model = new DmVentaApertura();
-	      $user = Yii::$app->user->identity;
-	      $model->dm_usuario_id = $user->getId();
-	      $model->dm_apert_fecha = date( 'Y-m-d H:i:s' );
-	      $model->dm_turnos_id = $user->id_turno;
+					if ($model->load(Yii::$app->request->post()) && $model->save()) {
+						//añado a la session el id de la apertura
+						$oSession = Yii::$app->session;
+						$oSession->open();
+						$oSession->set( 'id_apertura', $model->dm_apert_id );
+						$oSession->close();
+						return $this->goBack();
+					} else {
+						return $this->render('create', [
+							'model' => $model,
+						]);
+					}
+				}
+				catch (\Exception $e) {
+					error_log( 'DEBUG APERTURA CAJA ' . $e->getMessage() );
+					throw new NotAcceptableHttpException('Error en la apertura de caja.');
+				}
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->dm_apert_id]);
-	          //añado a la session el id de la apertura
-	          $oSession = Yii::$app->session;
-	          $oSession->open();
-	          $oSession->set( 'id_apertura', $model->dm_apert_id );
-	          $oSession->close();
-	          return $this->goBack();
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
     }
 
     /**

@@ -23,12 +23,15 @@ use kartik\widgets\TimePicker;
 			        'secondStep' => 5,
     			] ]) ?>
 
+	<?= $form->field($model, 'dm_venta_turno_orden')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'dm_venta_hora_termino')->widget(TimePicker::classname(), [ 'pluginOptions' => [
     				'showSeconds' => true,
 			        'showMeridian' => false,
 			        'minuteStep' => 1,
 			        'secondStep' => 5,
     			]  ]) ?>
+    <?= $form->field($model, 'dm_venta_cierre_sig_dia')->radioList( app\models\DmVentaTurnos::opciones() ); ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Guardar' : 'Actualizar', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

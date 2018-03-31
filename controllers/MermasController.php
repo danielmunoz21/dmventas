@@ -115,7 +115,7 @@ class MermasController extends Controller
         $model = $this->findModel($id);
 
         $aCajas = DmCajas::getAll();
-        $aProductos = \yii\helpers\ArrayHelper::map( DmProductos::find()->all(), 'dm_id_producto', 'dm_nom_producto' );
+        $aProductos = \yii\helpers\ArrayHelper::map( DmProductos::find()->orderBy('dm_nom_producto' )->all(), 'dm_id_producto', 'dm_nom_producto' );
         $iSaldoAnterior = $model->merma_cantidad;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -168,6 +168,7 @@ class MermasController extends Controller
 
         $aDataProd = DmProductos::find()
                         ->where( [ 'dm_cajas_id' => $id ] )
+	                      ->orderBy( 'dm_nom_producto' )
                         ->all();
 
 

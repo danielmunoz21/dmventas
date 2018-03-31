@@ -45,9 +45,9 @@ class DmVentas extends \yii\db\ActiveRecord
     {
         return [
             'dm_venta_id' => 'Dm Venta ID',
-            'dm_venta_cantidad' => 'Dm Venta Cantidad',
-            'dm_productos_dm_id_producto' => 'Dm Productos Dm Id Producto',
-            'dm_venta_diario_dm_venta_diario_id' => 'Dm Venta Diario Dm Venta Diario ID',
+            'dm_venta_cantidad' => 'Cantidad',
+            'dm_productos_dm_id_producto' => 'Producto',
+            'dm_venta_diario_dm_venta_diario_id' => 'Venta',
         ];
     }
 

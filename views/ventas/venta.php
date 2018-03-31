@@ -17,12 +17,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?php if(Yii::$app->session->hasFlash('ok')): ?>
-        <div class="alert alert-success" role="alert">
+        <div id="ocultar" class="alert alert-success" role="alert">
             <?= Yii::$app->session->getFlash('ok') ?>
         </div>
     <?php endif; ?>
     <?php if(Yii::$app->session->hasFlash('error')): ?>
-        <div class="alert alert-danger" role="alert">
+        <div id="ocultar" class="alert alert-danger" role="alert">
             <?= Yii::$app->session->getFlash('error') ?>
         </div>
     <?php endif; ?>
@@ -64,8 +64,12 @@ function calcularVuelto(){
         $('#vuelto').html( '' );
         $('#vuelto').html( '$' +  vuelto );
     }
+    else {
+        $( '#vuelto' ).html( '' );
+    }
     
 }
+
 
 
 
@@ -100,7 +104,7 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
                 <td id="totalventa"></td>
                 <td>&nbsp;</td>
             </tr>
-            <tr>
+            <!--<tr>
                 <td colspan="4" style="text-align: right;" >Paga con</td>
                 <td><input type="number" value="" id="pagacon" onblur="calcularVuelto()" /></td>
                 <td>&nbsp;</td>
@@ -109,7 +113,7 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
                 <td colspan="4" style="text-align: right;" >Vuelto</td>
                 <td id="vuelto"></td>
                 <td>&nbsp;</td>
-            </tr>
+            </tr>-->
         </tfoot>
 	</table>
 	

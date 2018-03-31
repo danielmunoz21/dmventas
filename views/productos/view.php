@@ -50,4 +50,6 @@ $aCajas = app\models\DmCajas::getAll();
         ],
     ]) ?>
 
+
+
 </div>

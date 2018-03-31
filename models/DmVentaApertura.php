@@ -103,8 +103,8 @@ class DmVentaApertura extends \yii\db\ActiveRecord
     static public function getIdApert( $p_iUserId, $p_strFecha, $p_iIdTurno ){
 	    $query = new Query();
 	    $query->select( 'MAX(dm_apert_id) AS ID' )
-	          ->from( 'dm_venta_apertura' )
-	          ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId, 'dm_turnos_id' => $p_iIdTurno] );
+		    ->from( 'dm_venta_apertura' )
+		    ->where( ['DATE_FORMAT(dm_apert_fecha, "%Y-%m-%d")' => $p_strFecha, 'dm_usuario_id' => $p_iUserId, 'dm_turnos_id' => $p_iIdTurno] );
 
 	    $row = $query->one();
 
@@ -114,6 +114,77 @@ class DmVentaApertura extends \yii\db\ActiveRecord
 	    else {
 		    return false;
 	    }
+    }
+
+
+    static public function getMaxApert( $p_iUserId ){
+    	$query  = new Query();
+	    $query->select( 'MAX(dm_apert_id) AS ID' )
+	          ->from( 'dm_venta_apertura' )
+	          ->where( ['dm_usuario_id' => $p_iUserId] );
+
+	    $row = $query->one();
+	    if ( $row != false ){
+	    	if ( is_null($row['ID']) ){
+	    		return false;
+		    }
+		    else {
+			    return $row['ID'];
+		    }
+
+	    }
+	    else {
+		    return false;
+	    }
+    }
+
+
+    static public function getLastApert(){
+	    $query  = new Query();
+	    $query->select( 'MAX(dm_apert_id) AS ID' )
+	          ->from( 'dm_venta_apertura' );
+
+	    $row = $query->one();
+	    if ( $row != false ){
+		    if ( is_null($row['ID']) ){
+			    return false;
+		    }
+		    else {
+			    return $row['ID'];
+		    }
+
+	    }
+	    else {
+		    return false;
+	    }
+    }
+
+    static public function getLastApertByTurn( $p_iTurnoId, $p_iOrden, $p_strDate ){
+
+	    $query  = new Query();
+	    $query->select( 'MAX(a.dm_apert_id) AS ID' )
+	          ->from( 'dm_venta_apertura a' )
+		        ->leftJoin( 'dm_venta_turnos t', 't.dm_venta_turnos_id = a.dm_apert_id' )
+						->where([
+							't.dm_venta_turnos_id' => $p_iTurnoId,
+							'DATE_FORMAT(a.dm_apert_fecha, "%Y-%m-%d")' => $p_strDate,
+							't.dm_venta_turno_orden' => $p_iOrden
+						]);
+
+	    $row = $query->one();
+	    if ( $row != false ){
+		    if ( is_null($row['ID']) ){
+			    return false;
+		    }
+		    else {
+			    return $row['ID'];
+		    }
+
+	    }
+	    else {
+		    return false;
+	    }
+
     }
 
 }

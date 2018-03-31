@@ -98,5 +98,13 @@ class DmProductos extends \yii\db\ActiveRecord
 
     }
 
+	/**
+	 * Get all prod order map
+	 * @return array
+	 */
+    static public function getAllMap(){
+	    return \yii\helpers\ArrayHelper::map( DmProductos::find()->all(), 'dm_id_producto', 'dm_nom_producto' );
+    }
+
 
 }

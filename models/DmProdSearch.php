@@ -42,7 +42,7 @@ class DmProdSearch extends DmProductos
      */
     public function search($params)
     {
-        $query = DmProductos::find();
+        $query = DmProductos::find()->orderBy(['dm_nom_producto' => SORT_ASC ]);
 
         // add conditions that should always apply here
 
@@ -73,5 +73,47 @@ class DmProdSearch extends DmProductos
             ->andFilterWhere(['like', 'dm_nom_producto', $this->dm_nom_producto]);
 
         return $dataProvider;
+    }
+
+	/**
+	 * PRODUCTOS BAJO STOCK 0
+	 * @param $params
+	 *
+	 * @return ActiveDataProvider
+	 */
+    public function searchprodbajostock( $params ){
+
+	    $query = DmProductos::find()->where( 'dm_stock < 0' )->orderBy('dm_nom_producto');
+
+	    // add conditions that should always apply here
+
+	    $dataProvider = new ActiveDataProvider([
+		    'query' => $query,
+	    ]);
+
+	    $this->load($params);
+
+	    if (!$this->validate()) {
+		    // uncomment the following line if you do not want to return any records when validation fails
+		    // $query->where('0=1');
+		    return $dataProvider;
+	    }
+
+	    // grid filtering conditions
+	    $query->andFilterWhere([
+		    'dm_id_producto' => $this->dm_id_producto,
+		    'dm_stock_min_compras' => $this->dm_stock_min_compras,
+		    'dm_stock' => $this->dm_stock,
+		    'dm_precio_compra' => $this->dm_precio_compra,
+		    'dm_porcentaje_ganancia' => $this->dm_porcentaje_ganancia,
+		    'dm_precio_venta' => $this->dm_precio_venta,
+		    'dm_cajas_id' => $this->dm_cajas_id,
+	    ]);
+
+	    $query->andFilterWhere(['like', 'dm_codigo', $this->dm_codigo])
+	          ->andFilterWhere(['like', 'dm_nom_producto', $this->dm_nom_producto]);
+
+	    return $dataProvider;
+
     }
 }

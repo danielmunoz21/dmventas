@@ -60,7 +60,7 @@ if ( count( $aCajas ) > 0 ){
 				<tfoot>
 				<tr>
 					<td colspan="4"><strong>TOTAL EN VENTAS</strong></td>
-					<td><?php echo $iTotalCantidad ?></td>
+					<td>&nbsp;</td>
 					<td><strong><?php echo '$'. number_format( $iTotalVentas, 0, ',' , '.' ); ?></strong></td>
 				</tr>
                 <tr>

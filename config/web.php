@@ -17,10 +17,17 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
-	          
-            //'enableAutoLogin' => false,
+	        'identityClass' => 'app\models\User',
+	        'enableAutoLogin' => false,
+	        'authTimeout' => 657567576,
+	        'enableSession' => true,
+	        'autoRenewCookie' => true,
         ],
+        'session' => [
+	        'class' => 'yii\web\Session',
+	        'timeout' => 657567576,
+        ],
+
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],

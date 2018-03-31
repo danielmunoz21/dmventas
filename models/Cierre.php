@@ -82,10 +82,11 @@ class Cierre extends \yii\db\ActiveRecord
 			$query->select( [ 'ventafecha', 'prodcod', 'nomprod', 'prodid', 'prodprecio AS total', 'SUM(dm_venta_cantidad) as cantidad', 'cajaid', 'prodprecio' ] )
 			      ->from( 'cierre' )
 			      ->where( [ 'turnoid' => $p_iIdTurno, 'userid' => $p_iUserId ] )
-			      ->andWhere( [ 'between', 'ventafecha' ,$p_fechaIn, $p_fechaEn  ] )
+			      //->andWhere( [ 'between', 'ventafecha' ,$p_fechaIn, $p_fechaEn  ] )
+			      ->andWhere( [ '>=', 'ventafecha' ,$p_fechaIn  ] )
+			      ->andWhere( [ '<=', 'ventafecha' ,$p_fechaEn  ] )
 			      ->addOrderBy( [ 'cajaid' => SORT_ASC ] )
 			      ->groupBy( 'prodid' );
-
 			return $query->all();
 
 

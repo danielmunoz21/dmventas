@@ -18,7 +18,7 @@ class DmVentaDSearch extends DmVentaDiario
     public function rules()
     {
         return [
-            [['dm_venta_diario_id', 'dm_venta_total', 'dm_usuario_dm_usuario_id'], 'integer'],
+            [['dm_venta_diario_id', 'dm_venta_total', 'dm_usuario_dm_usuario_id', 'dm_venta_turno_id'], 'integer'],
             [['dm_venta_datetime'], 'safe'],
         ];
     }
@@ -41,7 +41,7 @@ class DmVentaDSearch extends DmVentaDiario
      */
     public function search($params)
     {
-        $query = DmVentaDiario::find();
+        $query = DmVentaDiario::find()->orderBy('dm_venta_datetime' );
 
         // add conditions that should always apply here
 
@@ -57,14 +57,23 @@ class DmVentaDSearch extends DmVentaDiario
             return $dataProvider;
         }
 
+        if ( !empty( $this->dm_venta_datetime ) ){
+	        list( $dateIn, $dateEnd ) = explode( ' - ', $this->dm_venta_datetime );
+	        $query->andFilterWhere(['>=', 'dm_venta_datetime', $dateIn])
+	              ->andFilterWhere(['<', 'dm_venta_datetime', $dateEnd]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'dm_venta_diario_id' => $this->dm_venta_diario_id,
             'dm_venta_total' => $this->dm_venta_total,
-            'dm_venta_datetime' => $this->dm_venta_datetime,
             'dm_usuario_dm_usuario_id' => $this->dm_usuario_dm_usuario_id,
+            'dm_venta_turno_id' => $this->dm_venta_turno_id,
         ]);
 
-        return $dataProvider;
+
+
+
+	    return $dataProvider;
     }
 }

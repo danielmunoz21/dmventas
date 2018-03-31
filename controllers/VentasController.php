@@ -19,6 +19,7 @@ use yii\helpers\Html;
 use app\models\DmCajas;
 use app\models\DmVentaApertura;
 use kartik\mpdf\Pdf;
+use app\lib\LibreryFunction;
 /**
  * VentasController implements the CRUD actions for DmVentas model.
  */
@@ -113,7 +114,7 @@ class VentasController extends Controller
                 $response .= '<td>'.$modelProducto->dm_nom_producto.'</td>';
                 $response .= '<td>'.$modelProducto->dm_precio_venta.'</td>';
                 $response .= '<td>';
-                $response .= Html::input('text', 'venta['.$iIdProducto.']['.$indice.'][cantidad]', 1, [ 'class' => 'form-control', 'onblur' => 'javascript:calculartotal( this.value, "'.$iIdProducto.'" )' ]);
+                $response .= Html::input('text', 'venta['.$iIdProducto.']['.$indice.'][cantidad]', 1, [ 'class' => 'form-control', 'onblur' => 'javascript:calculartotal( this.value, "'.$iIdProducto.'" )', 'readonly'=>true ]);
                 $response .= Html::hiddenInput(
                     'valor['.$iIdProducto.']['.$indice.'][cantidad]',
                     $modelProducto->dm_precio_venta ,
@@ -141,226 +142,181 @@ class VentasController extends Controller
      * @return \yii\web\Response
      */
     public function actionRegistrarventa(){
+				try {
+					$user = Yii::$app->user->identity;
+					$aVentas = $_POST['venta'];
 
-        $user = Yii::$app->user->identity;
-        $aVentas = $_POST['venta'];
-        $aProductos = array();
-        $iTotalVenta = 0;
-        if ( count( $aVentas ) > 0 ){
-            $i = 0;
-            foreach( $aVentas as $iIdProducto => $aData ){
-                $iCantidad = 0;
-                foreach ( $aData as $indice => $data ){
-                    $iTotalVenta += $data['total'];
-                    $iCantidad += $data['cantidad'];
-                    $aProductos[$i]['id'] = $iIdProducto;
-                    $aProductos[$i]['cantidad'] = $iCantidad;
-                }
-                $i++;
-            }
+					$aProductos = array();
+					$iTotalVenta = 0;
+					if ( count( $aVentas ) > 0 ){
+						$i = 0;
+						foreach( $aVentas as $iIdProducto => $aData ){
+							$iCantidad = 0;
+							foreach ( $aData as $indice => $data ){
+								$iTotalVenta += $data['total'];
+								$iCantidad += $data['cantidad'];
+								$aProductos[$i]['id'] = $iIdProducto;
+								$aProductos[$i]['cantidad'] = $iCantidad;
+							}
+							$i++;
+						}
 
-            //registro venta de productos
-            $oDateTime = new \DateTime('now');
-            $oModelVentaDiario = new DmVentaDiario();
-            $oModelVentaDiario->attributes = [
-                'dm_venta_total' => $iTotalVenta,
-                'dm_venta_datetime' => $oDateTime->format( 'Y-m-d H:i:s' ),
-                'dm_usuario_dm_usuario_id' => $user->id,
-                'dm_venta_turno_id' => $user->id_turno,
-            ];
-            $bOK = true;
-            if ( $oModelVentaDiario->save() ){
-             
-                //grabo productos
-                foreach( $aProductos as $key => $producto ){
-                    $oModelVenta = new DmVentas();
-                    $oModelVenta->attributes = [
-                        'dm_venta_cantidad' => $producto['cantidad'],
-                        'dm_productos_dm_id_producto' => $producto['id'],
-                        'dm_venta_diario_dm_venta_diario_id' => $oModelVentaDiario->dm_venta_diario_id,
+						//registro venta de productos
+						$oDateTime = new \DateTime('now');
+						$oModelVentaDiario = new DmVentaDiario();
+						$oModelVentaDiario->attributes = [
+							'dm_venta_total' => $iTotalVenta,
+							'dm_venta_datetime' => $oDateTime->format( 'Y-m-d H:i:s' ),
+							'dm_usuario_dm_usuario_id' => $user->id,
+							'dm_venta_turno_id' => $user->id_turno,
+						];
+						$bOK = true;
+						if ( $oModelVentaDiario->save() ){
 
-                    ];
-                    if ( $oModelVenta->save() ){
-                        
-                        //descontar stock del producto. 
-                        $oModelProducto = DmProductos::findOne( $producto['id'] );
-                        $iStockAnterior = $oModelProducto->dm_stock;
-                        $newStock = $iStockAnterior - $producto['cantidad'];
-                        $oModelProducto->dm_stock = $newStock;
-                        $oModelProducto->save();
-                        /*if ( $newStock < 0 ){
-                            //no deberian quedar ya productos
-                        }
-                        else {
-                            $oModelProducto->dm_stock = $newStock;
-                            $oModelProducto->save();
+							//grabo productos
+							foreach( $aProductos as $key => $producto ){
+								$oModelVenta = new DmVentas();
+								$oModelVenta->attributes = [
+									'dm_venta_cantidad' => $producto['cantidad'],
+									'dm_productos_dm_id_producto' => $producto['id'],
+									'dm_venta_diario_dm_venta_diario_id' => $oModelVentaDiario->dm_venta_diario_id,
 
-                        }*/
+								];
+								if ( $oModelVenta->save() ){
 
-                        $bOK = true;
-                    }
-                    else {
-                        $bOK = false;
-                        break;
-                    }
-                }
+									//descontar stock del producto.
+									$oModelProducto = DmProductos::findOne( $producto['id'] );
+									$iStockAnterior = $oModelProducto->dm_stock;
+									$newStock = $iStockAnterior - $producto['cantidad'];
+									$oModelProducto->dm_stock = $newStock;
+									if ( $oModelProducto->save() ){
+										$bOK = true;
+									}
+									else {
+										$bOK = false;
+										//anular compra
+										error_log( 'DEBUG ANULAR COMPRA'  );
+									}
 
-                if ( $bOK ){
-                    \Yii::$app->getSession()->setFlash('ok', 'Venta Registrada.');
-                }
-                else{
-                    \Yii::$app->getSession()->setFlash('error', 'Error al registrar la venta.');
-                }
-            }
-        }
-        return $this->redirect( ['venta'] );
+								}
+								else {
+									$bOK = false;
+									//anular toda la compra
+									break;
+									error_log( 'DEBUG ANULAR COMPRA COMPLETA '  );
+								}
+							}
+
+							if ( $bOK ){
+								\Yii::$app->getSession()->setFlash('ok', 'Venta Registrada.');
+							}
+							else{
+								\Yii::$app->getSession()->setFlash('error', 'Error al registrar la venta.');
+							}
+						}
+					}
+					return $this->redirect( ['venta'] );
+				}
+				catch ( \Exception $e ) {
+					error_log( 'DEBUG REGISTRAR VENTA ' . $e->getMessage() );
+					throw new NotFoundHttpException('Error al guardar la venta.');
+				}
+
 
     }
 
 
     public function actionCaja(){
+				try {
+					$user = Yii::$app->user->identity;
 
-        $user = Yii::$app->user->identity;
+					$iIdTurno = $user->id_turno;
 
-        $iIdTurno = $user->id_turno;
+					$modelTurno = DmVentaTurnos::findOne( $iIdTurno );
 
-        $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
+					$oSession = Yii::$app->session;
+					$oSession->open();
+					$iIdApertura = $oSession->get( 'id_apertura' );
+					$oSession->close();
+					$oDTAC = new \DateTime( date( 'Y-m-d' ) );
 
-		    $oSession = Yii::$app->session;
-		    $oSession->open();
-		    $iIdApertura = $oSession->get( 'id_apertura' );
-		    $oSession->close();
+					$oLibFunction = new LibreryFunction();
+					$oLibFunction->prepareDataCierre( $user->getId(), $iIdTurno, $iIdApertura );
 
-		    $modelApertura = DmVentaApertura::findOne( $iIdApertura );
+					$aCajas = DmCajas::find()->all();
 
-	      $oDTAC = new \DateTime( date( 'Y-m-d' ) );
+          $aCierres = Cierre::getAllCierres( $iIdTurno, $oLibFunction->get_fecha_inicio(), $oLibFunction->get_fecha_termino(), $user->getId() );
 
-		    if ( $modelApertura !== null ){
-			    $oDtDateIn = $oDTdbi = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
-		    }
-		    else {
-			    $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
-			    $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
-			    $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
-			    //añadir tiempo de turno
-			    $oDtDateIn->add( $intervalo );
-		    }
+					return $this->render( '_cierre',[
+						'aCierres' => $aCierres,
+						'aCajas' => $aCajas,
+						'modelTurno' => $modelTurno,
+						'iMontoApertura' => $oLibFunction->get_monto_apertura(),
+						'user' => $user,
+						'strFecha' => $oDTAC->format( 'Y-m-d' ),
+					] );
 
-        $oDTdbEnd = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_termino ) ) );
-
-        $oDtDateEnd = new \DateTime( date( 'Y-m-d' ) );
-        //añadir tiempo de turno
-        $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
-        $oDtDateEnd->add( $intervalo );
-
-        $oDTApert = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
-		    if ( $oDTApert->format( 'H:i:s' ) > $oDtDateEnd->format('H:i:s') ){
-			    $oDtDateEnd->modify( '+1day' );
-		    }
-
-        if ( $modelApertura !== null ) {
-	        $iMontoApertura = $modelApertura->dm_apert_monto;
-        }
-        else{
-	        $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' ), $iIdTurno  );
-        }
-
-
-        $aCajas = DmCajas::find()->all();
-
-        $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ), $user->getId() );
-
-        return $this->render( '_cierre',[
-                'aCierres' => $aCierres,
-                'aCajas' => $aCajas,
-                'modelTurno' => $modelTurno,
-	              'iMontoApertura' => $iMontoApertura,
-	              'user' => $user,
-	              'strFecha' => $oDTAC->format( 'Y-m-d' ),
-            ] );
+				}
+				catch (\Exception $e){
+					error_log( 'DEBUG REGISTRAR CAJA ' . $e->getMessage() );
+					throw new NotFoundHttpException('Error al generar el cierre.' . $e->getMessage());
+				}
 
     }
 
     public function actionPdfcierre(){
 
+			try {
+				$user = Yii::$app->user->identity;
 
-	    $user = Yii::$app->user->identity;
+				$iIdTurno = $user->id_turno;
 
-	    $iIdTurno = $user->id_turno;
+				$modelTurno = DmVentaTurnos::findOne( $iIdTurno );
 
-	    $modelTurno = DmVentaTurnos::findOne( $iIdTurno );
+				$oSession = Yii::$app->session;
+				$oSession->open();
+				$iIdApertura = $oSession->get( 'id_apertura' );
+				$oSession->close();
+				$oDTAC = new \DateTime( date( 'Y-m-d' ) );
 
-	    $oSession = Yii::$app->session;
-	    $oSession->open();
-	    $iIdApertura = $oSession->get( 'id_apertura' );
-	    $oSession->close();
+				$oLibFunction = new LibreryFunction();
+				$oLibFunction->prepareDataCierre( $user->getId(), $iIdTurno, $iIdApertura );
 
-	    $modelApertura = DmVentaApertura::findOne( $iIdApertura );
+				$aCajas = DmCajas::find()->all();
 
-	    $oDTAC = new \DateTime( date( 'Y-m-d' ) );
+				$aCierres = Cierre::getAllCierres( $iIdTurno, $oLibFunction->get_fecha_inicio(), $oLibFunction->get_fecha_termino(), $user->getId() );
+				$content = $this->renderPartial('_pdf', [ 'aCierres' => $aCierres,
+				                                          'aCajas' => $aCajas,
+				                                          'modelTurno' => $modelTurno,
+				                                          'iMontoApertura' => $oLibFunction->get_monto_apertura(),
+				                                          'user' => $user,
+				                                          'strFecha' => $oDTAC->format( 'Y-m-d' ),
+				]);
 
-	    if ( $modelApertura !== null ){
-		    $oDtDateIn = $oDTdbi = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
-	    }
-	    else {
-		    $oDTdbi = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_inicio ) ) );
-		    $oDtDateIn = new \DateTime( date( 'Y-m-d' ) );
-		    $intervalo = new \DateInterval( 'PT'.$oDTdbi->format('H').'H'.$oDTdbi->format('i').'M'.$oDTdbi->format('s').'S' );
-		    //añadir tiempo de turno
-		    $oDtDateIn->add( $intervalo );
-	    }
+				$pdf = new Pdf([
+					'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts
+					'format' => Pdf::FORMAT_LETTER,
+					'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+					'content' => $content,
+					'options' => [
+						'title' => 'Listado de Productos',
+						'subject' => 'Listado de productos con códigos de barra incluidos'
+					],
+					'methods' => [
+						'SetHeader' => ['DmVentas: ' . date("d/m/Y")],
+						'SetFooter' => ['|Página {PAGENO}|'],
+					],
+					'destination' => Pdf::DEST_BROWSER,
+					'filename'=> 'CIERRE_TURNO_'. $modelTurno->dm_nombre .'_'.$user->username.'.pdf',
+				]);
 
-	    $oDTdbEnd = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_termino ) ) );
-
-	    $oDtDateEnd = new \DateTime( date( 'Y-m-d' ) );
-	    //añadir tiempo de turno
-	    $intervalo = new \DateInterval( 'PT'.$oDTdbEnd->format('H').'H'.$oDTdbEnd->format('i').'M'.$oDTdbEnd->format('s').'S' );
-	    $oDtDateEnd->add( $intervalo );
-
-	    $oDTApert = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
-	    if ( $oDTApert->format( 'H:i:s' ) > $oDtDateEnd->format('H:i:s') ){
-		    $oDtDateEnd->modify( '+1day' );
-	    }
-
-	    if ( $modelApertura !== null ) {
-		    $iMontoApertura = $modelApertura->dm_apert_monto;
-	    }
-	    else{
-		    $iMontoApertura = DmVentaApertura::getMontoApertura( $user->getId() , $oDtDateIn->format( 'Y-m-d' ), $iIdTurno  );
-	    }
-
-
-	    $aCajas = DmCajas::find()->all();
-
-	    $aCierres = Cierre::getAllCierres( $iIdTurno, $oDtDateIn->format( 'Y-m-d H:i:s' ), $oDtDateEnd->format( 'Y-m-d H:i:s' ), $user->getId() );
-	    $content = $this->renderPartial('_pdf', [ 'aCierres' => $aCierres,
-	                                              'aCajas' => $aCajas,
-	                                              'modelTurno' => $modelTurno,
-	                                              'iMontoApertura' => $iMontoApertura,
-	                                              'user' => $user,
-	                                              'strFecha' => $oDTAC->format( 'Y-m-d' ),
-		    ]);
-
-	    $pdf = new Pdf([
-		    'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts
-		    'format' => Pdf::FORMAT_LETTER,
-		    'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
-		    'content' => $content,
-		    'options' => [
-			    'title' => 'Listado de Productos',
-			    'subject' => 'Listado de productos con códigos de barra incluidos'
-		    ],
-		    'methods' => [
-			    'SetHeader' => ['DmVentas: ' . date("d/m/Y")],
-			    'SetFooter' => ['|Página {PAGENO}|'],
-		    ],
-		    'destination' => Pdf::DEST_BROWSER,
-		    'filename'=> 'CIERRE_TURNO_'. $modelTurno->dm_nombre .'_'.$user->username.'.pdf',
-	    ]);
-
-	    // return the pdf output as per the destination setting
-	    $pdf->render();
-
+				// return the pdf output as per the destination setting
+				$pdf->render();
+			}
+			catch (\Exception $e){
+				error_log( 'DEBUG PDF Cierre ' . $e->getMessage() );
+				throw new NotFoundHttpException('Error al generar el PDF.');
+			}
 
     }
 

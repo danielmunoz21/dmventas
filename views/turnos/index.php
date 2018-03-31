@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\DmVentaTurnosSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -28,6 +29,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'dm_nombre',
             'dm_venta_hora_inicio',
             'dm_venta_hora_termino',
+            'dm_venta_turno_orden',
+            [
+                'class' => '\kartik\grid\DataColumn',
+                'attribute' => 'dm_venta_cierre_sig_dia',
+                'value' => function( $data ){
+                    $aOpciones = app\models\DmVentaTurnos::opciones();
+                    return $aOpciones[ $data['dm_venta_cierre_sig_dia'] ];
+                  },
+                'filterType' => GridView::FILTER_SELECT2,
+                'filterWidgetOptions' => [
+                    'data' => app\models\DmVentaTurnos::opciones(),
+                    'options' => [
+                      'placeholder' => 'Seleccione',
+                    ],
+                ]
+
+            ],
 
             ['class' => 'kartik\grid\ActionColumn'],
         ],

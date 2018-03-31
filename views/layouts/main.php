@@ -10,7 +10,9 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use kartik\nav\NavX;
 use app\models\DmUsuario;
-
+use app\models\DmVentaApertura;
+use app\models\DmVentaTurnos;
+use app\lib\LibreryFunction;
 
 AppAsset::register($this);
 
@@ -42,7 +44,19 @@ AppAsset::register($this);
       if (Yii::$app->user->isGuest) {
           $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
       } else {
-
+	     $controller =  Yii::$app->controller->id;
+	     $action =   Yii::$app->controller->action->id;
+	     $url = $controller . '/' . $action;
+        if ( !isset( $_SESSION['id_apertura'] ) && $url != 'apertura/create' ){
+            $user = Yii::$app->user->identity;
+            if ( $user->tipo != 1 ){
+	            $oLibrery = new LibreryFunction();
+	            $bValido = $oLibrery->ValidateApertTurn( $user->getId(), $user->id_turno );
+	            if ( !$bValido ){
+	                Yii::$app->response->redirect(['/apertura/create']);
+                }
+            }
+        }
 
         if ( Yii::$app->user->identity->tipo == 1 ){  //usuario administrador
           $menuItems[] = [
@@ -52,6 +66,14 @@ AppAsset::register($this);
                 [ 'label' => 'Cajas', 'url' => ['/cajas'] ],
                 [ 'label' => 'Turnos', 'url' => ['/turnos'] ],
                 [ 'label' => 'Retirnos ingresados en el sistema', 'url' => ['/retiros'] ],
+                [
+                    'label' => 'Informes',
+                    'items' => [
+                       [ 'label' => 'Inventario productos bajo stock', 'url' => [ '/informes/prodbajostock' ] ],
+                       [ 'label' => 'Registro de ventas', 'url' => ['/informes/ventasreg'] ],
+                       //[ 'label' => 'Registro de ventas por producto', 'url' => ['/informes/ventaspprod'] ],
+                    ],
+                ],
             ],
             
           ];

@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\DmVentaTurnos */
 
-$this->title = 'Update Dm Venta Turnos: ' . $model->dm_venta_turnos_id;
-$this->params['breadcrumbs'][] = ['label' => 'Dm Venta Turnos', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->dm_venta_turnos_id, 'url' => ['view', 'id' => $model->dm_venta_turnos_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Actualizar turno: ' . $model->dm_nombre;
+$this->params['breadcrumbs'][] = ['label' => 'Turnos', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->dm_nombre, 'url' => ['view', 'id' => $model->dm_venta_turnos_id]];
+$this->params['breadcrumbs'][] = 'Actualizar';
 ?>
 <div class="dm-venta-turnos-update">
 
