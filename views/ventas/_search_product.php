@@ -34,9 +34,10 @@ function procesar(e){
                                 $("#tab_productos  tbody tr.lastrow"+i).after('<tr id="addr'+(i+1)+'" class="lastrow'+(i+1)+'"></tr>');
                                 i++;   
                                 $('#searchprod').val( '' );
+                                $('#searchprod').focus();
                                 $('#registro').removeAttr( 'style' );
                                 calcularTotalVenta();
-                                $('#searchprod').focus();
+                                
                             }
                         },
                         error  : function () 

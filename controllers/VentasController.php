@@ -114,7 +114,7 @@ class VentasController extends Controller
                 $response .= '<td>'.$modelProducto->dm_nom_producto.'</td>';
                 $response .= '<td>'.$modelProducto->dm_precio_venta.'</td>';
                 $response .= '<td>';
-                $response .= Html::input('text', 'venta['.$iIdProducto.']['.$indice.'][cantidad]', 1, [ 'class' => 'form-control', 'onblur' => 'javascript:calculartotal( this.value, "'.$iIdProducto.'" )', 'readonly'=>true ]);
+                $response .= Html::input('text', 'venta['.$iIdProducto.']['.$indice.'][cantidad]', 1, [ 'class' => 'form-control', 'onblur' => 'javascript:calculartotal( this.value, "'.$iIdProducto.'" )' ]);
                 $response .= Html::hiddenInput(
                     'valor['.$iIdProducto.']['.$indice.'][cantidad]',
                     $modelProducto->dm_precio_venta ,

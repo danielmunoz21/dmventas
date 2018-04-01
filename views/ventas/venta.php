@@ -104,7 +104,7 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
                 <td id="totalventa"></td>
                 <td>&nbsp;</td>
             </tr>
-            <!--<tr>
+            <tr>
                 <td colspan="4" style="text-align: right;" >Paga con</td>
                 <td><input type="number" value="" id="pagacon" onblur="calcularVuelto()" /></td>
                 <td>&nbsp;</td>
@@ -113,7 +113,7 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
                 <td colspan="4" style="text-align: right;" >Vuelto</td>
                 <td id="vuelto"></td>
                 <td>&nbsp;</td>
-            </tr>-->
+            </tr>
         </tfoot>
 	</table>
 	
