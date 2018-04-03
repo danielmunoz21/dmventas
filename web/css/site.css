@@ -113,3 +113,8 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.table tbody tr:hover{
+    background: #5BC0DE;
+    color: #ffffff;
+}

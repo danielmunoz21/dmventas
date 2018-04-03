@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\DmProductos;
+use yii\db\Query;
 
 /**
  * DmProdSearch represents the model behind the search form about `app\models\DmProductos`.
@@ -115,5 +116,20 @@ class DmProdSearch extends DmProductos
 
 	    return $dataProvider;
 
+    }
+
+    static public function prodbajostockpdf(){
+    	$query = new Query();
+    	$result = $query->select( '*' )
+		    ->from( 'dm_productos' )
+		    ->where(  'dm_stock < 0')
+	      ->all();
+
+    	if ( count($result) > 0 ) {
+    		return $result;
+	    }
+	    else {
+    		return false;
+	    }
     }
 }

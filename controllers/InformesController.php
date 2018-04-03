@@ -23,6 +23,7 @@ use app\models\DmCajasSearch;
 use app\models\DmVentaDiario;
 use app\models\DmVentaDSearch;
 use app\models\DmVentaSearch;
+use kartik\mpdf\Pdf;
 
 class InformesController extends Controller{
 
@@ -40,7 +41,7 @@ class InformesController extends Controller{
 			],
 			'access' => [
 				'class' => \yii\filters\AccessControl::className(),
-				'only' => [ 'prodbajostock', 'ventasreg', 'view' ],
+				'only' => [ 'prodbajostock', 'ventasreg', 'view', 'prodbajostockpdf' ],
 				'rules' => [
 					// allow authenticated users
 					[
@@ -109,6 +110,44 @@ class InformesController extends Controller{
 		catch( \Exception $e ){
 			error_log( 'DEBUG INFORMES CONTROLLER ACTION VIEW ' . $e->getMessage() );
 			throw new NotFoundHttpException('Error.' . $e->getMessage());
+		}
+
+	}
+
+	public function actionProdbajostockpdf(){
+		try{
+
+			$dataProvider = DmProdSearch::prodbajostockpdf();
+
+			if ( $dataProvider != false ) {
+				$content = $this->renderPartial('prodbajostock_pdf', [ 'dataProvider' => $dataProvider ]);
+
+				$oDate = new \DateTime('now');
+
+				$pdf = new Pdf([
+					'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts
+					'format' => Pdf::FORMAT_LETTER,
+					'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+					'content' => $content,
+					'options' => [
+						'title' => 'PRODUCTOS BAJO STOCK',
+						'subject' => 'LISTADO DE PRODUCTOS BAJOSTOCK'
+					],
+					'methods' => [
+						'SetHeader' => ['DmVentas: ' . date("r")],
+						'SetFooter' => ['|Página {PAGENO}|'],
+					],
+					'destination' => Pdf::DEST_BROWSER,
+					'filename'=> 'PRODBAJOSTOCK_'.$oDate->format('dmYHis').'.pdf'
+				]);
+
+				// return the pdf output as per the destination setting
+				$pdf->render();
+			}
+
+		}
+		catch ( \Exception $e ){
+			error_log( 'DEBUG INFORMES CONTROLLER PRODBAJOSTOCK PDF ' . $e->getMessage() );
 		}
 
 	}

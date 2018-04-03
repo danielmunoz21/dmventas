@@ -191,9 +191,11 @@ class VentasController extends Controller
 									$oModelProducto->dm_stock = $newStock;
 									if ( $oModelProducto->save() ){
 										$bOK = true;
+										error_log( 'PRODUCTO ' . $oModelProducto->dm_codigo . ' NOMBRE '. $oModelProducto->dm_nom_producto .' CANTIDAD ' . $producto['cantidad'] );
 									}
 									else {
 										$bOK = false;
+										break;
 										//anular compra
 										error_log( 'DEBUG ANULAR COMPRA'  );
 									}
