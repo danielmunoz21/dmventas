@@ -20,9 +20,10 @@ use app\models\DmProductos;
                 <table class="table">
                     <thead>
                         <tr>
+                            <td>Código</td>
                             <td>Producto</td>
                             <td>Valor</td>
-                            <td>Código</td>
+                            <td>Código de barras</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,6 +33,7 @@ use app\models\DmProductos;
                             $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
 
                             echo '<tr>';
+	                            echo '<td>' . $modelProducto->dm_codigo . '</td>';
                                 echo '<td>' . $modelProducto->dm_nom_producto . '</td>';
                                 echo '<td>$' . number_format($modelProducto->dm_precio_venta, 0, ',', '.') . '</td>';
                                 echo '<td><img src="data:image/png;base64,' . base64_encode($generator->getBarcode($modelProducto->dm_codigo, $generator::TYPE_CODE_128)) . '"></td>';
