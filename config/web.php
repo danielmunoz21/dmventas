@@ -18,14 +18,15 @@ $config = [
         ],
         'user' => [
 	        'identityClass' => 'app\models\User',
-	        'enableAutoLogin' => false,
-	        'authTimeout' => 657567576,
+	        'enableAutoLogin' => true,
 	        'enableSession' => true,
+	        'authTimeout' => 15600,
+	        //'enableSession' => true,
 	        'autoRenewCookie' => true,
         ],
         'session' => [
 	        'class' => 'yii\web\Session',
-	        'timeout' => 657567576,
+	        'timeout' => 15600,
         ],
 
         'errorHandler' => [
