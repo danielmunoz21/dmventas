@@ -18,7 +18,7 @@ class DmVentaAperturaSearch extends DmVentaApertura
     public function rules()
     {
         return [
-            [['dm_apert_id', 'dm_apert_monto', 'dm_usuario_id'], 'integer'],
+            [['dm_apert_id', 'dm_apert_monto', 'dm_usuario_id', 'dm_turnos_id'], 'integer'],
             [['dm_apert_fecha'], 'safe'],
         ];
     }
@@ -57,12 +57,19 @@ class DmVentaAperturaSearch extends DmVentaApertura
             return $dataProvider;
         }
 
+	    if ( !empty( $this->dm_apert_fecha ) ){
+		    list( $dateIn, $dateEnd ) = explode( ' - ', $this->dm_apert_fecha );
+		    $query->andFilterWhere(['>=', 'dm_apert_fecha', $dateIn])
+		          ->andFilterWhere(['<', 'dm_apert_fecha', $dateEnd]);
+	    }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'dm_apert_id' => $this->dm_apert_id,
             'dm_apert_monto' => $this->dm_apert_monto,
-            'dm_apert_fecha' => $this->dm_apert_fecha,
+            //'dm_apert_fecha' => $this->dm_apert_fecha,
             'dm_usuario_id' => $this->dm_usuario_id,
+            'dm_turnos_id' => $this->dm_turnos_id,
         ]);
 
         return $dataProvider;

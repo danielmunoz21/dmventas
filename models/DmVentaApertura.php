@@ -44,9 +44,9 @@ class DmVentaApertura extends \yii\db\ActiveRecord
         return [
             'dm_apert_id' => 'Dm Apert ID',
             'dm_apert_monto' => 'Monto',
-            'dm_apert_fecha' => 'Dm Apert Fecha',
-            'dm_usuario_id' => 'Dm Usuario ID',
-            'dm_turnos_id' => 'Dm Turnos ID',
+            'dm_apert_fecha' => 'Fecha',
+            'dm_usuario_id' => 'Usuario',
+            'dm_turnos_id' => 'Turno',
         ];
     }
 
@@ -186,5 +186,25 @@ class DmVentaApertura extends \yii\db\ActiveRecord
 	    }
 
     }
+
+	static public function getContinuosApertInf( $p_iTurnId, $p_strDate ){
+
+		$query  = new Query();
+		$query->select( 'a.dm_apert_id' )
+		      ->from( 'dm_venta_apertura a' )
+		      ->leftJoin( 'dm_venta_turnos t', 't.dm_venta_turnos_id = a.dm_turnos_id' )
+		      ->where(['t.dm_venta_turnos_id' => $p_iTurnId])
+		      ->andWhere(['DATE_FORMAT(a.dm_apert_fecha, "%Y-%m-%d")' => $p_strDate] );
+
+		$row = $query->scalar();
+
+		if ( $row != false ){
+			return $row;
+		}
+		else {
+			return false;
+		}
+
+	}
 
 }

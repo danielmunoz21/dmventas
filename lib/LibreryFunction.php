@@ -167,4 +167,53 @@ class LibreryFunction {
 
 	}
 
+
+	public function prepareDataInform( $p_iUserId, $p_iTurnoId, $p_iIdApertura ){
+		try{
+			$modelApertura = DmVentaApertura::findOne( $p_iIdApertura );
+			$modelTurno = DmVentaTurnos::findOne( $p_iTurnoId );
+
+			$oDtDateIn = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) ); //fecha y hora de apertura
+
+			$oDTdbEnd = new \DateTime( date( 'H:i:s', strtotime( $modelTurno->dm_venta_hora_termino ) ) );
+			//fecha de termino en base a apertura del dia
+			//obtengo turno siguiente
+			$iIdConturno = DmVentaTurnos::getIdTurnByOrder( ($modelTurno->dm_venta_turno_orden + 1) );
+			$iIDContApert = false;
+			if ( $iIdConturno != false ) {
+				$iIDContApert = DmVentaApertura::getContinuosApertInf( $iIdConturno, date('Y-m-d', strtotime( $modelApertura->dm_apert_fecha )) );
+			}
+
+			if ( $iIDContApert != false && $iIDContApert != $modelApertura->dm_apert_id ){
+
+				$oTemp = DmVentaApertura::findOne( $iIDContApert );
+				$oDtDateEnd = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $oTemp->dm_apert_fecha ) ) );
+			}
+			else { //en caso de no existir un turno previo
+				$oDtDateEnd = new \DateTime( date( 'Y-m-d', strtotime( $modelApertura->dm_apert_fecha ) ) );
+				//añadir tiempo de turno
+				$intervalo = new \DateInterval( 'PT' . $oDTdbEnd->format( 'H' ) . 'H' . $oDTdbEnd->format( 'i' ) . 'M' . $oDTdbEnd->format( 's' ) . 'S' );
+				$oDtDateEnd->add( $intervalo );
+			}
+
+			if ( $modelApertura != null ) { //modifico si existe apertura CUENTA SOLO PARA TURNO DE NOCHE
+
+				$oDTApert = new \DateTime( date( 'Y-m-d H:i:s', strtotime( $modelApertura->dm_apert_fecha ) ) );
+				$oMidthNight = new \DateTime( 'today midnight' ); //esto tengo que arreglarlo
+				if ( $oDTApert->format( 'H:i:s' ) > $oDtDateEnd->format( 'H:i:s' ) && $modelTurno->dm_venta_cierre_sig_dia == 1 ) {
+					$oDtDateEnd->modify( '+1day' );
+				}
+			}
+
+			$this->set_monto_apertura( $modelApertura->dm_apert_monto );
+			$this->set_fecha_inicio( $oDtDateIn->format( 'Y-m-d H:i:s' ) );
+			$this->set_fecha_termino( $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
+			$this->set_fecha_actual( $oDtDateIn->format( 'Y-m-d' ) );
+
+		}
+		catch ( \Exception $exception ){
+			error_log( 'PREPARE DATA CIERRE '. $exception->getMessage() );
+		}
+	}
+
 }

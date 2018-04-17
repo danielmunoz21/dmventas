@@ -86,5 +86,26 @@ class DmVentaTurnos extends \yii\db\ActiveRecord
     	return [ 0 => 'No', 1 => 'Si' ];
     }
 
+	/**
+	 * Retorna el id del orden siguiente
+	 * @param $p_iOrder
+	 *
+	 * @return bool|integer
+	 */
+    static public function getIdTurnByOrder( $p_iOrder ){
+	    $query = new Query();
+	    $iTurno = $query->select( 'dm_venta_turnos_id' )
+	                    ->from( 'dm_venta_turnos' )
+	                    ->where(['dm_venta_turno_orden' => $p_iOrder])
+	                    ->scalar();
+
+	    if ( $iTurno == false ) {
+		    return false;
+	    }
+	    else {
+		    return $iTurno;
+	    }
+    }
+
 
 }

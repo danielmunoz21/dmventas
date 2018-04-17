@@ -24,6 +24,10 @@ use app\models\DmVentaDiario;
 use app\models\DmVentaDSearch;
 use app\models\DmVentaSearch;
 use kartik\mpdf\Pdf;
+use app\models\DmVentaApertura;
+use app\models\DmVentaAperturaSearch;
+use app\lib\LibreryFunction;
+use app\models\Cierre;
 
 class InformesController extends Controller{
 
@@ -41,7 +45,7 @@ class InformesController extends Controller{
 			],
 			'access' => [
 				'class' => \yii\filters\AccessControl::className(),
-				'only' => [ 'prodbajostock', 'ventasreg', 'view', 'prodbajostockpdf' ],
+				'only' => [ 'prodbajostock', 'ventasreg', 'view', 'prodbajostockpdf', 'cierreturnos', 'cierre' ],
 				'rules' => [
 					// allow authenticated users
 					[
@@ -149,6 +153,41 @@ class InformesController extends Controller{
 		catch ( \Exception $e ){
 			error_log( 'DEBUG INFORMES CONTROLLER PRODBAJOSTOCK PDF ' . $e->getMessage() );
 		}
+
+	}
+
+	public function actionCierreturnos(){
+
+		$searchModel = new DmVentaAperturaSearch();
+		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+		return $this->render('cierreturnos', [
+			'searchModel' => $searchModel,
+			'dataProvider' => $dataProvider,
+		]);
+	}
+
+
+	public function actionCierre( $id ){
+		$oModelApertura = DmVentaApertura::findOne( $id );
+		$iIdUsuario = $oModelApertura->dm_usuario_id;
+		$iIdTurno = $oModelApertura->dm_turnos_id;
+
+		$modelTurno = DmVentaTurnos::findOne( $iIdTurno );
+
+		$oLibFunction = new LibreryFunction();
+		$oLibFunction->prepareDataInform( $iIdUsuario, $iIdTurno, $oModelApertura->dm_apert_id );
+
+		$aCajas = DmCajas::find()->all();
+
+		$aCierres = Cierre::getAllCierres( $iIdTurno, $oLibFunction->get_fecha_inicio(), $oLibFunction->get_fecha_termino(), $iIdUsuario );
+		return $this->render('_view_cierre', [ 'aCierres' => $aCierres,
+		                                          'aCajas' => $aCajas,
+		                                          'modelTurno' => $modelTurno,
+		                                          'iMontoApertura' => $oLibFunction->get_monto_apertura(),
+		                                          'strFecha' => $oLibFunction->get_fecha_actual(),
+																							'iIdUsuario' => $iIdUsuario
+		]);
 
 	}
 
