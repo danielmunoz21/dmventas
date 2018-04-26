@@ -38,12 +38,20 @@ if ( count( $aCajas ) > 0 ){
 
 						$strTotal = number_format( $iTotalVprod, 0, ',' , '.' );
 						$strTotalProd = number_format( $data['prodprecio'], 0, ',', '.' );
+                        $decimals = mb_substr( $data['cantidad'], mb_strpos( $data['cantidad'], '.' ) + 1, mb_strlen( $data['cantidad'] ) );
+						if ( $decimals > 0 ) {
+						    $cantidadvend = number_format( $data['cantidad'], 3, ',', '.' );
+                        }
+                        else {
+						    $cantidadvend = $data['cantidad'];
+                        }
+
 						echo '<tr>';
 
 						echo '<td>'. $data['prodcod'] .'</td>';
 						echo '<td>'. $data['nomprod'] .'</td>';
 						echo '<td>$'. $strTotalProd .'</td>';
-						echo '<td>'. $data['cantidad'] .'</td>';
+						echo '<td>'. $cantidadvend .'</td>';
 						echo '<td>'.$modelProd->dm_stock.'</td>';
 						echo '<td>$'. $strTotal .'</td>';
 						echo '</tr>';

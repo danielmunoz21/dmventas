@@ -36,8 +36,20 @@ $script2 = <<< JS
 
 
 function calculartotal( cantidad, idProducto ){
+    
 	var total = cantidad * jQuery( '#costo_' + idProducto ).val();
-	jQuery('#total_prod_' +  idProducto).val( total );
+	
+	var total2 = parseInt( total );
+
+	var ultdig = total2.toString().substring( total2.toString().length -1, total2.toString().length );
+	if ( ultdig <= 5 ) {
+	    total2 = total2 - parseInt( ultdig );
+	}
+	else if( ultdig > 5 ) {
+	    total2 = total2 + ( 10 - parseInt(ultdig) );
+	}
+	
+	jQuery('#total_prod_' +  idProducto).val( total2 );
 	calcularTotalVenta();
 }
 

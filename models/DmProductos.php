@@ -8,16 +8,16 @@ use Yii;
  * This is the model class for table "dm_productos".
  *
  * @property string $dm_id_producto
- * @property string $dm_codigo
+ * @property string $dm_codigo codigo de barra
  * @property string $dm_nom_producto
- * @property integer $dm_stock_min_compras
- * @property integer $dm_stock
- * @property integer $dm_precio_compra
+ * @property int $dm_stock_min_compras Define la cantidad minima para comprar
+ * @property double $dm_stock
+ * @property int $dm_precio_compra
  * @property string $dm_porcentaje_ganancia
- * @property integer $dm_precio_venta
- * @property integer $dm_cajas_id
+ * @property int $dm_precio_venta
+ * @property int $dm_cajas_id
  *
- * @property DmVentasProd[] $dmVentasProds
+ * @property DmVentas[] $dmVentas
  */
 class DmProductos extends \yii\db\ActiveRecord
 {
@@ -32,16 +32,16 @@ class DmProductos extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
-        return [
-            [['dm_codigo', 'dm_nom_producto', 'dm_stock', 'dm_precio_compra', 'dm_precio_venta', 'dm_cajas_id'], 'required'],
-            [['dm_stock_min_compras', 'dm_stock', 'dm_precio_compra', 'dm_precio_venta', 'dm_cajas_id'], 'integer'],
-            [['dm_porcentaje_ganancia'], 'number'],
-            [['dm_codigo', 'dm_nom_producto'], 'string', 'max' => 255],
-	          [['dm_codigo'], 'unique'],
-        ];
-    }
+	public function rules()
+	{
+		return [
+			[['dm_codigo', 'dm_nom_producto', 'dm_stock', 'dm_precio_compra', 'dm_porcentaje_ganancia', 'dm_precio_venta', 'dm_cajas_id'], 'required'],
+			[['dm_stock_min_compras', 'dm_precio_compra', 'dm_precio_venta', 'dm_cajas_id'], 'integer'],
+			[['dm_stock', 'dm_porcentaje_ganancia'], 'number'],
+			[['dm_codigo', 'dm_nom_producto'], 'string', 'max' => 255],
+			[['dm_codigo'], 'unique'],
+		];
+	}
 
     /**
      * @inheritdoc

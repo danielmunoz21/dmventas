@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "dm_ventas".
  *
  * @property string $dm_venta_id
- * @property string $dm_venta_cantidad
+ * @property double $dm_venta_cantidad
  * @property string $dm_productos_dm_id_producto
  * @property string $dm_venta_diario_dm_venta_diario_id
  *
@@ -32,7 +32,8 @@ class DmVentas extends \yii\db\ActiveRecord
     {
         return [
             [['dm_venta_cantidad', 'dm_productos_dm_id_producto', 'dm_venta_diario_dm_venta_diario_id'], 'required'],
-            [['dm_venta_cantidad', 'dm_productos_dm_id_producto', 'dm_venta_diario_dm_venta_diario_id'], 'integer'],
+            [['dm_venta_cantidad'], 'number'],
+            [['dm_productos_dm_id_producto', 'dm_venta_diario_dm_venta_diario_id'], 'integer'],
             [['dm_productos_dm_id_producto'], 'exist', 'skipOnError' => true, 'targetClass' => DmProductos::className(), 'targetAttribute' => ['dm_productos_dm_id_producto' => 'dm_id_producto']],
             [['dm_venta_diario_dm_venta_diario_id'], 'exist', 'skipOnError' => true, 'targetClass' => DmVentaDiario::className(), 'targetAttribute' => ['dm_venta_diario_dm_venta_diario_id' => 'dm_venta_diario_id']],
         ];
