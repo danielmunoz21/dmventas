@@ -32,7 +32,8 @@
         "vilochane/yii2-barcode-generator": "@dev",
         "picqer/php-barcode-generator": "@dev",
         "omnilight/yii2-scheduling": "*",
-        "kartik-v/yii2-date-range": "dev-master"
+        "kartik-v/yii2-date-range": "dev-master",
+        "mdscomp/yii2-bootstrap-dialog": "~1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

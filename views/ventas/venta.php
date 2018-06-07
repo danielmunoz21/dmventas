@@ -4,6 +4,10 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\web\View;
+use kartik\dialog\DialogAsset;
+DialogAsset::register($this);
+
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\DmVentaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -30,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 
-echo $this->render( '_search_product', [ 'modelSearch' => $modelSearch ] );
+
 
 $script2 = <<< JS
 
@@ -83,13 +87,34 @@ function calcularVuelto(){
 }
 
 
+/**
+* Valida y procesa el formulario para su submit
+*/
+function validateSale() {
+
+    $(document).ready(function(){
+        $("#regvent ").find(':input.cantidad').each(function() {
+         var elemento= this;
+         var cantidad = parseInt(elemento.value);
+         if ( cantidad > 40 ) {
+           var re = confirm( 'Ha ingresado más de 40 unidades del mismo producto. ¿Está seguro de realizar esta venta?' );
+           if ( re ) {
+               $('#regvent').submit();
+           }
+         }
+         else {
+             $('#regvent').submit();
+         }
+        });
+    });
+}
 
 
 JS;
-$this->registerJs($script2, View::POS_HEAD );
+$this->registerJs($script2, View::POS_END );
 
-
-echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart/form-data'])
+echo $this->render( '_search_product', [ 'modelSearch' => $modelSearch ] );
+echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart/form-data', 'id'=>'regvent']);
 ?>
 
 
@@ -131,5 +156,5 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
 	
 </div>
 
-<?= Html::submitButton( 'Registrar venta', array( 'class' => 'btn btn-danger', 'id' => 'registro', 'style' => 'display:none;' ) ); ?>
+<?= Html::button( 'Registrar venta', array( 'class' => 'btn btn-danger', 'id' => 'registro', 'style' => 'display:none;', 'onclick' => 'validateSale()', 'name' => 'registrar_venta' ) ); ?>
 <?= Html::endForm() ?> 

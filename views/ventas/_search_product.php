@@ -9,8 +9,9 @@ use keygenqt\autocompleteAjax\AutocompleteAjax;
 $script = <<< JS
 var i=1;  
 var total_venta = 0;
-function procesar(e){
-        if ( $('#searchprod').val() !== '' ){
+function procesar(event){
+             
+        if( $('#searchprod').val() !== '' ){
             
         
             $(document).ready(function(){ 
