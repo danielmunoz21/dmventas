@@ -32,7 +32,7 @@ class ProductosController extends Controller
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::className(),
-                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado', 'calculoredondeo', 'generarcodigo' ],
+                'only' => ['create', 'update', 'view', 'delete', 'index', 'stock', 'listado', 'calculoredondeo', 'generarcodigo', 'listadocod' ],
                 'rules' => [
                     // allow authenticated users
                     [
@@ -170,6 +170,42 @@ class ProductosController extends Controller
 
         // return the pdf output as per the destination setting
         $pdf->render();
+
+    }
+
+    public function actionListadocod(){
+
+    	$aProd = DmProductos::getProdCodGen();
+
+    	if ( count( $aProd ) > 0 ) {
+
+		    $content = $this->renderPartial('_list_prod_cod_gen', [ 'aProd' => $aProd ]);
+
+		    $pdf = new Pdf([
+			    'mode' => Pdf::MODE_UTF8, // leaner size using standard fonts
+			    'format' => Pdf::FORMAT_LETTER,
+			    'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+			    'content' => $content,
+			    'options' => [
+				    'title' => 'Listado de Productos',
+				    'subject' => 'Listado de productos con códigos de barra incluidos'
+			    ],
+			    'methods' => [
+				    'SetHeader' => ['DmVentas: ' . date("r")],
+				    'SetFooter' => ['|Página {PAGENO}|'],
+			    ],
+			    'destination' => Pdf::DEST_BROWSER,
+			    'filename'=> 'Listado_productos.pdf'
+		    ]);
+
+		    // return the pdf output as per the destination setting
+		    $pdf->render();
+
+
+	    }
+	    else {
+    		$this->redirect( [ 'index' ] );
+	    }
 
     }
 

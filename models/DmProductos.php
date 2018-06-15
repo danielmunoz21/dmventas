@@ -80,6 +80,14 @@ class DmProductos extends \yii\db\ActiveRecord
     }
 
 	/**
+	 * Extrae productos a los cuales el código a sido generado
+	 */
+    static public function getProdCodGen() {
+    	return self::find()->where( [ '<=', 'LENGTH(dm_codigo)', 5] )->all();
+
+    }
+
+	/**
 	 * Valida si existe el codigo de barras en la base de datos
 	 * @param $p_iCodigo
 	 *

@@ -27,6 +27,12 @@ $this->params['breadcrumbs'][] = $this->title;
                       'data-toggle' => 'tooltip',
                       'title'       => 'Genera PDF con listado de productos y codigos de estos'
                   ] );
+                  echo ' '.  Html::a( '<i class="fa glyphicon glyphicon-download-alt"></i> Listado productos cod. generado', [ '/productos/listadocod' ], [
+                      'class'       => 'btn btn-info',
+                      'target'      => '_blank',
+                      'data-toggle' => 'tooltip',
+                      'title'       => 'Genera PDF con listado de productos y codigos de estos'
+                  ] );
                   ?>
           </p>
           <?php
