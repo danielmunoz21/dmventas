@@ -98,8 +98,12 @@ function validateSale() {
          var cantidad = parseInt(elemento.value);
          if ( cantidad > 40 ) {
            var re = confirm( 'Ha ingresado más de 40 unidades del mismo producto. ¿Está seguro de realizar esta venta?' );
+           console.log( 'RESPUESTA ' + re); 
            if ( re ) {
-               $('#regvent').submit();
+             $('#regvent').submit();
+           }
+           else {
+              console.log('NOT SUBMIT');
            }
          }
          else {
@@ -156,5 +160,5 @@ echo Html::beginForm(['ventas/registrarventa'], 'post', ['enctype' => 'multipart
 	
 </div>
 
-<?= Html::button( 'Registrar venta', array( 'class' => 'btn btn-danger', 'id' => 'registro', 'style' => 'display:none;', 'onclick' => 'validateSale()', 'name' => 'registrar_venta' ) ); ?>
+<?= Html::a( '<i class="fa glyphicon glyphicon-shopping-cart"></i> Registrar venta', null ,array( 'class' => 'btn btn-danger', 'id' => 'registro', 'style' => 'display:none;', 'onclick' => 'validateSale()', 'name' => 'registrar_venta' ) ); ?>
 <?= Html::endForm() ?> 
