@@ -162,9 +162,6 @@ class LibreryFunction {
 		$this->set_fecha_inicio( $oDtDateIn->format( 'Y-m-d H:i:s' ) );
 		$this->set_fecha_termino( $oDtDateEnd->format( 'Y-m-d H:i:s' ) );
 
-
-
-
 	}
 
 

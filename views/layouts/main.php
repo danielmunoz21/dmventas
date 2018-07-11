@@ -70,6 +70,7 @@ AppAsset::register($this);
                     'label' => 'Informes',
                     'items' => [
                        [ 'label' => 'Inventario productos bajo stock', 'url' => [ '/informes/prodbajostock' ] ],
+                       [ 'label' => 'Inventario', 'url' => [ '/informes/inventario' ] ],
                        [ 'label' => 'Registro de ventas', 'url' => ['/informes/ventasreg'] ],
                        [ 'label' => 'Cierres de turno', 'url' => ['/informes/cierreturnos'] ],
                        //[ 'label' => 'Registro de ventas por producto', 'url' => ['/informes/ventaspprod'] ],

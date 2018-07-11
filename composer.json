@@ -33,7 +33,8 @@
         "picqer/php-barcode-generator": "@dev",
         "omnilight/yii2-scheduling": "*",
         "kartik-v/yii2-date-range": "dev-master",
-        "mdscomp/yii2-bootstrap-dialog": "~1.0"
+        "mdscomp/yii2-bootstrap-dialog": "~1.0",
+        "kartik-v/yii2-export": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

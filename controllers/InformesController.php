@@ -45,7 +45,7 @@ class InformesController extends Controller{
 			],
 			'access' => [
 				'class' => \yii\filters\AccessControl::className(),
-				'only' => [ 'prodbajostock', 'ventasreg', 'view', 'prodbajostockpdf', 'cierreturnos', 'cierre' ],
+				'only' => [ 'prodbajostock', 'ventasreg', 'view', 'prodbajostockpdf', 'cierreturnos', 'cierre', 'inventario' ],
 				'rules' => [
 					// allow authenticated users
 					[
@@ -189,6 +189,19 @@ class InformesController extends Controller{
 																							'iIdUsuario' => $iIdUsuario
 		]);
 
+	}
+
+	public function actionInventario(){
+
+		$searchModel = new DmProdSearch();
+		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$aCajas = DmCajas::getAll();
+
+
+		return $this->render('inventario', [
+			'dataProvider' => $dataProvider,
+			'searchModel' => $searchModel,
+		]);
 	}
 
 }
